@@ -10,15 +10,28 @@
 
 using namespace std;
 
-vec3 color(const ray &r) {
-	vec3 direction = r.direction();
+bool hitSphere(const vec3 &center, float radius, const ray &r) {
+	vec3 oc = r.origin() - center;
+	float a = vec3::dot(r.direction(), r.direction());
+	float b = 2 * vec3::dot(r.direction(), oc);
+	float c = vec3::dot(oc, oc) - radius * radius;
+	float discriminant = b*b - 4*a*c;
+	return discriminant > 0;
+}
 
+vec3 color(const ray &r) {
+	if (hitSphere(vec3(0, 0, -1), 0.5, r))
+	{
+		return vec3(1, 0, 0);
+	}
+
+	vec3 direction = r.direction();
 	float t = 0.5 * direction.y + 0.5;
 
 	return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
 }
 
-const char *FILE_PATH = "helloWorld.ppm";
+const char *FILE_PATH = "output/ch4-adding a sphere.ppm";
 
 int main()
 {
