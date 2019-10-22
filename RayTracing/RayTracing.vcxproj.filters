@@ -30,6 +30,15 @@
     <ClInclude Include="ray.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="hitable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HitableList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

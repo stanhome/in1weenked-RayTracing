@@ -2,6 +2,7 @@
 *Debug/
 *VC.db
 *VC.VC.opendb
+*.suo
 
 # Prerequisites
 *.d

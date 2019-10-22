@@ -2,15 +2,15 @@
 
 #include "vec3.h"
 
-class ray
+class Ray
 {
 public:
 	vec3 A;
 	vec3 B;
 
 public:
-	ray() {}
-	ray(const vec3 &a, const vec3 &b): A(a), B(b) {
+	Ray() {}
+	Ray(const vec3 &a, const vec3 &b): A(a), B(b) {
 		B.normalize();
 	}
 	vec3 origin() const { return A; }

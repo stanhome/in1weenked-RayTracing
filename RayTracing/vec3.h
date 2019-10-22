@@ -14,6 +14,8 @@ class vec3
 {
 public:
 	float x, y, z;
+
+	static vec3 ONE;
 	
 public:
 	vec3() {};
@@ -77,6 +79,10 @@ inline vec3 operator*(const float s, const vec3 &lhs) {
 	return lhs * s;
 }
 
+inline vec3 operator/(const vec3 &lhs, const float s) {
+	return vec3(lhs.x / s, lhs.y / s, lhs.z / s);
+}
+
 
 // for color
 inline vec3 operator*(const vec3 &lhs, const vec3 &rhs) {
@@ -89,3 +95,4 @@ inline vec3 operator/(const vec3 &lhs, const vec3 &rhs) {
 }
 
 
+vec3 vec3::ONE = vec3(1, 1, 1);
