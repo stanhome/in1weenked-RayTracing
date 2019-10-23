@@ -145,7 +145,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hitable.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="sphere.h" />
