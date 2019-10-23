@@ -2,6 +2,8 @@
 
 #include "ray.h"
 
+class Material;
+
 struct HitRecord {
 	// 碰撞射线的步长
 	float t;
@@ -9,6 +11,7 @@ struct HitRecord {
 	vec3 p;
 	// 碰撞点处的，球的法线（已归一化）
 	vec3 normal;
+	Material *matPtr;
 };
 
 class Hitable {

@@ -4,39 +4,38 @@
 #include "stdafx.h"
 #include <iostream>
 #include <fstream>
-#include <random>
-#include <chrono>
 
+
+#include "utils.h"
 #include "ray.h"
 #include "hitable.h"
 #include "HitableList.h"
 #include "sphere.h"
 #include "Camera.h"
+#include "Material.h"
 
 using namespace std;
 
+const char *FILE_PATH = "output/ch8-Metal.ppm";
+
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
-const char *FILE_PATH = "output/ch7-Diffuse Materials.ppm";
+// 光线追踪最大次数
+const int RAY_TRACE_MAX_TIMES = 50;
 
-float randCanonical();
 
-vec3 randomInUnitSphere() {
-	vec3 p;
-	do 
-	{
-		p = 2.0 * vec3(randCanonical(), randCanonical(), randCanonical()) - vec3(1, 1, 1);
-	} while (vec3::dot(p, p) >= 1.0);
-
-	return p;
-}
-
-vec3 color(const Ray &r, Hitable *world) {
+vec3 color(const Ray &r, Hitable *world, int depth) {
 	HitRecord rec;
 	if (world->hit(r, 0.0, MAX_RAY_HIT_DISTANCE, rec)) {
-		// rec.p + rec.normal => 射线碰撞点的单位切球（单位球体与碰撞点相切）的球心
-		vec3 target = rec.p + rec.normal + randomInUnitSphere();
-
-		return 0.5 * color(Ray(rec.p, target - rec.p), world);
+		Ray scattered;
+		vec3 attenuation;
+		
+		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, attenuation, scattered))
+		{
+			return attenuation * color(scattered, world, depth + 1);
+		}
+		else {
+			return vec3(0, 0, 0);
+		}
 	}
 	else {
 		// sky background
@@ -47,22 +46,9 @@ vec3 color(const Ray &r, Hitable *world) {
 	}
 }
 
-
-std::default_random_engine s_randGenerator;
-
-void init() {
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	s_randGenerator = std::default_random_engine(seed);
-}
-
-float randCanonical() {
-	return std::generate_canonical<float, std::numeric_limits<float>::digits>(s_randGenerator);
-}
-
-
 int main()
 {
-	init();
+	initUtils();
 
 	float nx = 200;
 	float ny = 100;
@@ -73,10 +59,12 @@ int main()
 	ppmImage.close();
 
 	// init world objects;
-	Hitable *list[2];
-	list[0] = new Sphere(vec3(0, 0, -1), 0.5);
-	list[1] = new Sphere(vec3(0, -100.5, -1), 100);
-	Hitable *world = new HitableList(list, 2);
+	Hitable *list[4];
+	list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.8, 0.3, 0.3)));
+	list[1] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
+	list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 1.0));
+	list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Metal(vec3(0.8, 0.8, 0.8), 0.3));
+	Hitable *world = new HitableList(list, 4);
 	Camera camera;
 
 	// draw
@@ -93,7 +81,7 @@ int main()
 				float v = float(j + randCanonical()) / ny;
 				Ray r = camera.getRay(u, v);
 				//vec3 p = r.pointAtParameter(2.0);
-				col += color(r, world);
+				col += color(r, world, 0);
 			}
 
 			col /= ns;

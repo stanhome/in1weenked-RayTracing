@@ -6,11 +6,20 @@ class Sphere : public Hitable {
 public:
 	vec3 center;
 	float radius;
+	Material *mat;
 
 public:
 	Sphere() {};
-	Sphere(vec3 cen, float r) : center(cen), radius(r) {};
+	Sphere(vec3 cen, float r, Material *m) : center(cen), radius(r), mat(m) {};
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
+
+private:
+	void assignHitRecord(HitRecord &rec, float t, const Ray &r) const {
+		rec.t = t;
+		rec.matPtr = mat;
+		rec.p = r.pointAtParameter(t);
+		rec.normal = (rec.p - center) / radius;
+	}
 };
 
 
@@ -26,18 +35,14 @@ bool Sphere::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
 	{
 		float t = (-b - sqrt(discriminant)) / (2.0 * a);
 		if (t > tMin && t < tMax) {
-			rec.t = t;
-			rec.p = r.pointAtParameter(t);
-			rec.normal = (rec.p - center) / radius;
+			assignHitRecord(rec, t, r);
 
 			return true;
 		}
 
 		t = (-b + sqrt(discriminant)) / (2.0 * a);
 		if (t > tMin && t < tMax) {
-			rec.t = t;
-			rec.p = r.pointAtParameter(t);
-			rec.normal = (rec.p - center) / radius;
+			assignHitRecord(rec, t, r);
 
 			return true;
 		}
