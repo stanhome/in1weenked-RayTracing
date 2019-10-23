@@ -16,14 +16,30 @@
 using namespace std;
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
+const char *FILE_PATH = "output/ch7-Diffuse Materials.ppm";
 
+float randCanonical();
+
+vec3 randomInUnitSphere() {
+	vec3 p;
+	do 
+	{
+		p = 2.0 * vec3(randCanonical(), randCanonical(), randCanonical()) - vec3(1, 1, 1);
+	} while (vec3::dot(p, p) >= 1.0);
+
+	return p;
+}
 
 vec3 color(const Ray &r, Hitable *world) {
 	HitRecord rec;
 	if (world->hit(r, 0.0, MAX_RAY_HIT_DISTANCE, rec)) {
-		return 0.5 * (rec.normal + vec3::ONE);
+		// rec.p + rec.normal => 射线碰撞点的单位切球（单位球体与碰撞点相切）的球心
+		vec3 target = rec.p + rec.normal + randomInUnitSphere();
+
+		return 0.5 * color(Ray(rec.p, target - rec.p), world);
 	}
 	else {
+		// sky background
 		vec3 direction = r.direction();
 		float t = 0.5 * direction.y + 0.5;
 
@@ -31,8 +47,6 @@ vec3 color(const Ray &r, Hitable *world) {
 	}
 }
 
-
-const char *FILE_PATH = "output/ch6-Antialiasing.ppm";
 
 std::default_random_engine s_randGenerator;
 
@@ -83,6 +97,9 @@ int main()
 			}
 
 			col /= ns;
+			// use gamma 2. so square-root
+			col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
+
 			int ir = int(255.99 * col.r());
 			int ig = int(255.99 * col.g());
 			int ib = int(255.99 * col.b());
