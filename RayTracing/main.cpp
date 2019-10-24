@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch11-Defocus Blur.png";
+const char *FILE_PATH = "output/ch12-Final Scene.png";
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
 // 光线追踪最大次数
@@ -51,6 +51,47 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 	}
 }
 
+Hitable *randomScene() {
+	int n = 500;
+	Hitable **list = new Hitable *[n + 1];
+	list[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
+	int i = 1;
+	for (int a = -11; a < 11; a++)
+	{
+		for (int b = -11; b < 11; b++)
+		{
+			float chooseMat = randCanonical();
+			vec3 center(a + 0.9 * randCanonical(), 0.2, b + 0.9 * randCanonical());
+			if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
+				if (chooseMat < 0.8) {
+					//diffuse
+					list[i++] = new Sphere(center, 0.2, new Lambertian(
+						vec3(randCanonical() * randCanonical(),
+							randCanonical() * randCanonical(),
+							randCanonical() * randCanonical())));
+				}
+				else if (chooseMat < 0.6) {
+					//metal
+					list[i++] = new Sphere(center, 0.2, new Metal(
+						vec3(0.5 * (1 + randCanonical()), 
+							0.5 * (1 + randCanonical()), 
+							0.5 * (1 + randCanonical()))));
+				}
+				else {
+					// glass
+					list[i++] = new Sphere(center, 0.2, new Dielectric(1.5));
+				}
+			}
+		}
+	}
+
+	list[i++] = new Sphere(vec3(0, 1, 0), 1.0, new Dielectric(1.5));
+	list[i++] = new Sphere(vec3(-4, 1, 0), 1.0, new Lambertian(vec3(0.4, 0.2, 0.1)));
+	list[i++] = new Sphere(vec3(4, 1, 0), 1.0, new Metal(vec3(0.7, 0.6, 0.5)));
+
+	return new HitableList(list, i);
+}
+
 #define MULTIPLE_RUN
 
 int main()
@@ -62,26 +103,20 @@ int main()
 	int ns = 100;
 	int n = 4;
 
-
 	// init world objects;
-	Hitable *list[5];
-	list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
-	list[1] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
-	list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
-	list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
-	list[4] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
-	Hitable *world = new HitableList(list, 5);
+	//Hitable *list[5];
+	//list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
+	//list[1] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
+	//list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
+	//list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	//list[4] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
+	//Hitable *world = new HitableList(list, 5);
+	Hitable *world = randomScene();
 
-	//float R = cos(M_PI/4);
-	//Hitable *list[2];
-	//list[0] = new Sphere(vec3(-R, 0, -1), R, new Lambertian(vec3(0, 0, 1)));
-	//list[1] = new Sphere(vec3( R, 0, -1), R, new Lambertian(vec3(1, 0, 0)));
-	//Hitable *world = new HitableList(list, 2);
-
-	vec3 lookfrom(3, 3, 2);
-	vec3 lookat(0, 0, -1);
+	vec3 lookfrom(13, 2, 3);
+	vec3 lookat(0, 0, 0);
 	float distToFocus = (lookfrom - lookat).length();
-	float aperture = 2.0;
+	float aperture = 0.1;
 	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus);
 
 

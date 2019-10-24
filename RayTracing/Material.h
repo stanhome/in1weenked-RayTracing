@@ -41,7 +41,7 @@ public:
 	float fuzz;
 
 public:
-	Metal(const vec3 &a, float f) : albedo(a) {
+	Metal(const vec3 &a, float f = 0) : albedo(a) {
 		fuzz = f < 1 ? f : 1;
 	}
 
