@@ -54,11 +54,18 @@ public:
 	inline float length() const { return sqrt(x*x + y*y + z*z); }
 	inline float squaredLength() const {return x * x + y * y + z * z; }
 
-	inline void normalize() {
+	inline vec3 &normalize() {
 		float len = length();
 		x /= len;
 		y /= len;
 		z /= len;
+
+		return *this;
+	}
+
+	inline vec3 normalized() const {
+		float len = length();
+		return vec3(x / len, y / len, z / len);
 	}
 
 	inline static float dot(const vec3 &lhs, const vec3 &rhs) {

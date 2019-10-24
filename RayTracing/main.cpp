@@ -16,7 +16,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch8-Metal.ppm";
+const char *FILE_PATH = "output/ch9-Dielectrics.ppm";
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
 // 光线追踪最大次数
@@ -59,12 +59,13 @@ int main()
 	ppmImage.close();
 
 	// init world objects;
-	Hitable *list[4];
-	list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.8, 0.3, 0.3)));
+	Hitable *list[5];
+	list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
 	list[1] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
-	list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 1.0));
-	list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Metal(vec3(0.8, 0.8, 0.8), 0.3));
-	Hitable *world = new HitableList(list, 4);
+	list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
+	list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	list[4] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
+	Hitable *world = new HitableList(list, 5);
 	Camera camera;
 
 	// draw

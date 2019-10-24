@@ -15,6 +15,7 @@ float randCanonical() {
 	return std::generate_canonical<float, std::numeric_limits<float>::digits>(s_randGenerator);
 }
 
+
 //////////////////////////////////////////////////////////////////////////
 // geometry math
 
@@ -28,6 +29,35 @@ vec3 randomInUnitSphere() {
 	return p;
 }
 
+// 反射
 vec3 reflect(const vec3 &v, const vec3 &n) {
 	return v - 2 * vec3::dot(v, n) * n;
 }
+
+//折射(斯涅耳定律)
+bool refract(const vec3 &v, const vec3 &n, float niOverNt, vec3 &refracted) {
+	vec3 vNormalized = v.normalized();
+	float dt = vec3::dot(vNormalized, n);
+
+	// 根据斯涅耳定律，n sin(theta) = n’sin(theta’) 推得：
+	float discriminant = 1.0 - niOverNt * niOverNt * (1 - dt* dt);
+	if (discriminant > 0)
+	{
+		// 发生折射
+		refracted = niOverNt * (v + abs(dt) * n) - n * sqrt(discriminant);
+		return true;
+	}
+	else
+	{
+		// 发生全反射
+		return false;
+	}
+}
+
+float schlick(float cosine, float refIdx) {
+	float r0 = (1 - refIdx) / (1 + refIdx);
+	r0 = r0 * r0;
+	
+	return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
