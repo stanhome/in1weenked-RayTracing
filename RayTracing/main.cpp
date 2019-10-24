@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch10-PositionableCamera.png";
+const char *FILE_PATH = "output/ch11-Defocus Blur.png";
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
 // 光线追踪最大次数
@@ -77,7 +77,12 @@ int main()
 	//list[0] = new Sphere(vec3(-R, 0, -1), R, new Lambertian(vec3(0, 0, 1)));
 	//list[1] = new Sphere(vec3( R, 0, -1), R, new Lambertian(vec3(1, 0, 0)));
 	//Hitable *world = new HitableList(list, 2);
-	Camera camera(vec3(-2, 2, 1), vec3(0, 0, -1), 90, float(nx) / float(ny));
+
+	vec3 lookfrom(3, 3, 2);
+	vec3 lookat(0, 0, -1);
+	float distToFocus = (lookfrom - lookat).length();
+	float aperture = 2.0;
+	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus);
 
 
 	unsigned char *data = new unsigned char[nx * ny * ns];

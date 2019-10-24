@@ -8,13 +8,19 @@ public:
 	vec3 lowerLeftCorner;
 	vec3 horizontal;
 	vec3 vertical;
+	vec3 u, v, w;
+	float lensRadius;
 
 public:
 	/*
-	 * verticalFov is top to bottom in degrees
+	 * @param verticalFov is top to bottom in degrees
+	 * @param aspect Height over width
+	 * @param aperture, π‚»¶
+	 * @param focusDistance, for defocus blur.
 	*/
-	Camera(vec3 lookFrom, vec3 lookAt, float verticalFov, float aspect) {
-		vec3 u, v, w;
+	Camera(vec3 lookFrom, vec3 lookAt, float verticalFov, float aspect, float aperture, float focusDistance) {
+		lensRadius = aperture / 2;
+
 		float theta = verticalFov * M_PI / 180;
 		float halfHeight = tan(theta / 2);
 		float halfWidth = aspect * halfHeight;
@@ -27,12 +33,16 @@ public:
 		v = vec3::cross(w, u);
 
 		//lowerLeftCorner = vec3(-halfWidth, -halfHeight, -1.0);
-		lowerLeftCorner = origin + (-halfWidth*u) + (-halfHeight*v) + (-w);
-		horizontal = 2 * halfWidth * u;
-		vertical = 2 * halfHeight * v;
+		lowerLeftCorner = origin + (-halfWidth*focusDistance*u) + (-halfHeight*focusDistance*v) + (-focusDistance * w);
+		horizontal = 2 * halfWidth * focusDistance * u;
+		vertical = 2 * halfHeight * focusDistance * v;
 	}
 
-	Ray getRay(float u, float v) {
-		return Ray(origin, lowerLeftCorner + u * horizontal + v * vertical - origin);
+	Ray getRay(float s, float t) {
+		vec3 rd = lensRadius * randomInUnitDisk();
+		vec3 offset = u * rd.x + v * rd.y;
+		vec3 rayOrigin = origin + offset;
+
+		return Ray(rayOrigin, lowerLeftCorner + s * horizontal + t * vertical - rayOrigin);
 	}
 };

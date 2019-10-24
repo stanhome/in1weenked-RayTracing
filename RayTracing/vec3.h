@@ -15,6 +15,7 @@ class vec3
 public:
 	float x, y, z;
 
+	static vec3 ZERO;
 	static vec3 ONE;
 	static vec3 UP;
 	
@@ -113,5 +114,6 @@ inline vec3 operator/(const vec3 &lhs, const vec3 &rhs) {
 }
 
 
+vec3 vec3::ZERO = vec3(0, 0, 0);
 vec3 vec3::ONE = vec3(1, 1, 1);
 vec3 vec3::UP = vec3(0, 1, 0);
