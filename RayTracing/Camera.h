@@ -10,11 +10,26 @@ public:
 	vec3 vertical;
 
 public:
-	Camera() {
-		origin = vec3(0, 0, 0);
-		lowerLeftCorner = vec3(-2.0, -1.0, -1.0);
-		horizontal = vec3(4.0, 0, 0);
-		vertical = vec3(0, 2, 0);
+	/*
+	 * verticalFov is top to bottom in degrees
+	*/
+	Camera(vec3 lookFrom, vec3 lookAt, float verticalFov, float aspect) {
+		vec3 u, v, w;
+		float theta = verticalFov * M_PI / 180;
+		float halfHeight = tan(theta / 2);
+		float halfWidth = aspect * halfHeight;
+
+		origin = lookFrom;
+		w = lookFrom-lookAt;
+		w.normalize();
+		u = vec3::cross(vec3::UP, w);
+		u.normalize();
+		v = vec3::cross(w, u);
+
+		//lowerLeftCorner = vec3(-halfWidth, -halfHeight, -1.0);
+		lowerLeftCorner = origin + (-halfWidth*u) + (-halfHeight*v) + (-w);
+		horizontal = 2 * halfWidth * u;
+		vertical = 2 * halfHeight * v;
 	}
 
 	Ray getRay(float u, float v) {

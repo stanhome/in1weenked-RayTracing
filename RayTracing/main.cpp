@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch9-Dielectrics.png";
+const char *FILE_PATH = "output/ch10-PositionableCamera.png";
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
 // 光线追踪最大次数
@@ -71,10 +71,16 @@ int main()
 	list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
 	list[4] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
 	Hitable *world = new HitableList(list, 5);
-	Camera camera;
+
+	//float R = cos(M_PI/4);
+	//Hitable *list[2];
+	//list[0] = new Sphere(vec3(-R, 0, -1), R, new Lambertian(vec3(0, 0, 1)));
+	//list[1] = new Sphere(vec3( R, 0, -1), R, new Lambertian(vec3(1, 0, 0)));
+	//Hitable *world = new HitableList(list, 2);
+	Camera camera(vec3(-2, 2, 1), vec3(0, 0, -1), 90, float(nx) / float(ny));
+
 
 	unsigned char *data = new unsigned char[nx * ny * ns];
-
 	auto draw = [&](int yStart, int yEnd) {
 		for (int j = yStart; j < yEnd; j++)
 		{

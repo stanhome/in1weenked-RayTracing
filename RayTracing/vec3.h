@@ -16,6 +16,7 @@ public:
 	float x, y, z;
 
 	static vec3 ONE;
+	static vec3 UP;
 	
 public:
 	vec3() {};
@@ -72,7 +73,7 @@ public:
 		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 	}
 
-	inline static vec3 corss(const vec3 &lhs, const vec3 &rhs) {
+	inline static vec3 cross(const vec3 &lhs, const vec3 &rhs) {
 		return vec3((lhs.y * rhs.z - lhs.z * rhs.y),
 			(lhs.z * rhs.x - lhs.x * rhs.z),
 			(lhs.x * rhs.y - lhs.y * rhs.x)
@@ -113,3 +114,4 @@ inline vec3 operator/(const vec3 &lhs, const vec3 &rhs) {
 
 
 vec3 vec3::ONE = vec3(1, 1, 1);
+vec3 vec3::UP = vec3(0, 1, 0);
