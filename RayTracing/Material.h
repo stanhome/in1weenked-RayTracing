@@ -4,6 +4,7 @@
 #include "ray.h"
 #include "Hitable.h"
 
+
 class Material {
 public:
 	/**

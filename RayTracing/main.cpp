@@ -1,9 +1,14 @@
-// RayTracing.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+ï»¿// RayTracing.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "stdafx.h"
 #include <iostream>
-#include <fstream>
+#include <sstream>
+#include <thread>
+#include "stb/stb_image_write.h"
+#include <windows.h>
 
 
 #include "utils.h"
@@ -16,10 +21,10 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch9-Dielectrics.ppm";
+const char *FILE_PATH = "output/ch9-Dielectrics.png";
 
 const float MAX_RAY_HIT_DISTANCE = 1000.0;
-// ¹âÏß×·×Ù×î´ó´ÎÊı
+// å…‰çº¿è¿½è¸ªæœ€å¤§æ¬¡æ•°
 const int RAY_TRACE_MAX_TIMES = 50;
 
 
@@ -46,17 +51,17 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 	}
 }
 
+#define MULTIPLE_RUN
+
 int main()
 {
 	initUtils();
 
-	float nx = 200;
-	float ny = 100;
-	float ns = 100;
+	int nx = 200;
+	int ny = 100;
+	int ns = 100;
+	int n = 4;
 
-	ofstream ppmImage(FILE_PATH);
-	ppmImage << "P3\n" << nx << " " << ny << "\n255\n";
-	ppmImage.close();
 
 	// init world objects;
 	Hitable *list[5];
@@ -68,38 +73,89 @@ int main()
 	Hitable *world = new HitableList(list, 5);
 	Camera camera;
 
-	// draw
-	for (int j = ny - 1; j >= 0; j--)
-	{
-		ppmImage.open(FILE_PATH, ios::app);
-		for (int i = 0; i < nx; i++)
-		{
-			vec3 col(0, 0, 0);
+	unsigned char *data = new unsigned char[nx * ny * ns];
 
-			for (int s = 0; s < ns; s++)
+	auto draw = [&](int yStart, int yEnd) {
+		for (int j = yStart; j < yEnd; j++)
+		{
+			for (int i = 0; i < nx; i++)
 			{
-				float u = float(i + randCanonical()) / nx;
-				float v = float(j + randCanonical()) / ny;
-				Ray r = camera.getRay(u, v);
-				//vec3 p = r.pointAtParameter(2.0);
-				col += color(r, world, 0);
+				vec3 col(0, 0, 0);
+
+				for (int s = 0; s < ns; s++)
+				{
+					float u = float(i + randCanonical()) / float(nx);
+					float v = float(j + randCanonical()) / float(ny);
+					Ray r = camera.getRay(u, v);
+					//vec3 p = r.pointAtParameter(2.0);
+					col += color(r, world, 0);
+				}
+
+				col /= float(ns);
+
+				// use gamma 2. so square-root
+				col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
+
+				int ir = int(255.99 * col.r());
+				int ig = int(255.99 * col.g());
+				int ib = int(255.99 * col.b());
+
+				data[j *nx * n + i * n + 0] = ir;
+				data[j *nx * n + i * n + 1] = ig;
+				data[j *nx * n + i * n + 2] = ib;
+				data[j *nx * n + i * n + 3] = 255;
+			}
+		}
+	};
+
+	clock_t tickStart = clock();
+
+	#ifdef MULTIPLE_RUN
+		int cpuCount = thread::hardware_concurrency();
+		cout << "CPU count:" << cpuCount << endl;
+
+		int perCpuTask = ny / cpuCount;
+		if (ny % cpuCount > 0)
+		{
+			perCpuTask++;
+		}
+
+		vector<thread> drawThreads;
+		int taskIndex = 0;
+		do 
+		{
+			int endIndex = taskIndex + perCpuTask;
+			if (endIndex > ny)
+			{
+				endIndex = ny;
 			}
 
-			col /= ns;
-			// use gamma 2. so square-root
-			col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
+			thread drawThread(draw, taskIndex, endIndex);
+			drawThreads.push_back(std::move(drawThread));
+			taskIndex = endIndex;
 
-			int ir = int(255.99 * col.r());
-			int ig = int(255.99 * col.g());
-			int ib = int(255.99 * col.b());
+		} while (taskIndex < ny);
 
-			ppmImage << ir << " " << ig << " " << ib << "\n";
+		for (auto iter = drawThreads.begin(); iter != drawThreads.end(); iter++)
+		{
+			iter->join();
 		}
-		ppmImage.close();
-	}
 
-	cout << "well done." << endl;
-	//char a;
-	//cin >> a;
+	#else
+		cout << "single thread:" <<  endl;
+		// draw
+		draw(0, ny);
+
+	#endif
+	clock_t tickEnd = clock();
+
+	stringstream ss;
+	ss << "==> well done. elapsed:" << double(tickEnd - tickStart) / CLOCKS_PER_SEC << "s" << endl;
+	cout << ss.str();
+	OutputDebugStringA(ss.str().c_str());
+
+	stbi_flip_vertically_on_write(true);
+	stbi_write_png(FILE_PATH, nx, ny, n, data, nx * n);
+	delete[] data;
 }
 
