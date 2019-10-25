@@ -23,7 +23,7 @@ using namespace std;
 
 const char *FILE_PATH = "output/ch12-Final Scene.png";
 
-const float MAX_RAY_HIT_DISTANCE = 1000.0;
+const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
 const int RAY_TRACE_MAX_TIMES = 50;
 
@@ -63,14 +63,14 @@ Hitable *randomScene() {
 			float chooseMat = randCanonical();
 			vec3 center(a + 0.9 * randCanonical(), 0.2, b + 0.9 * randCanonical());
 			if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
-				if (chooseMat < 0.8) {
+				if (chooseMat < 0.7) {
 					//diffuse
 					list[i++] = new Sphere(center, 0.2, new Lambertian(
 						vec3(randCanonical() * randCanonical(),
 							randCanonical() * randCanonical(),
 							randCanonical() * randCanonical())));
 				}
-				else if (chooseMat < 0.6) {
+				else if (chooseMat < 0.9) {
 					//metal
 					list[i++] = new Sphere(center, 0.2, new Metal(
 						vec3(0.5 * (1 + randCanonical()), 
@@ -100,7 +100,7 @@ int main()
 
 	int nx = 200;
 	int ny = 100;
-	int ns = 100;
+	int ns = 500;
 	int n = 4;
 
 	// init world objects;
@@ -152,6 +152,8 @@ int main()
 				data[j *nx * n + i * n + 3] = 255;
 			}
 		}
+
+		printf("thread finished scope(%d, %d)\n", yStart, yEnd);
 	};
 
 	clock_t tickStart = clock();
