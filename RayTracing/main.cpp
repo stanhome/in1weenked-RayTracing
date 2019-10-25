@@ -54,7 +54,7 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 Hitable *randomScene() {
 	int n = 500;
 	Hitable **list = new Hitable *[n + 1];
-	list[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
+	list[0] = new Sphere(vec3(0, -500, -1), 500, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
 	int i = 1;
 	for (int a = -11; a < 11; a++)
 	{
@@ -100,7 +100,7 @@ int main()
 
 	int nx = 200;
 	int ny = 100;
-	int ns = 500;
+	int ns = 50;
 	int n = 4;
 
 	// init world objects;
@@ -120,7 +120,7 @@ int main()
 	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus);
 
 
-	unsigned char *data = new unsigned char[nx * ny * ns];
+	unsigned char *data = new unsigned char[nx * ny * n];
 	auto draw = [&](int yStart, int yEnd) {
 		for (int j = yStart; j < yEnd; j++)
 		{
