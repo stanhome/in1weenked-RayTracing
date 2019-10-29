@@ -18,10 +18,11 @@
 #include "sphere.h"
 #include "Camera.h"
 #include "Material.h"
+#include "MovingSphere.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/ch12-Final Scene.png";
+const char *FILE_PATH = "output/next week/ch01-Motion Blur.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -56,21 +57,22 @@ Hitable *randomScene() {
 	Hitable **list = new Hitable *[n + 1];
 	list[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
 	int i = 1;
-	for (int a = -11; a < 11; a++)
+	for (int a = -10; a < 10; a++)
 	{
-		for (int b = -11; b < 11; b++)
+		for (int b = -10; b < 10; b++)
 		{
 			float chooseMat = randCanonical();
 			vec3 center(a + 0.9 * randCanonical(), 0.2, b + 0.9 * randCanonical());
 			if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
 				if (chooseMat < 0.7) {
 					//diffuse
-					list[i++] = new Sphere(center, 0.2, new Lambertian(
-						vec3(randCanonical() * randCanonical(),
-							randCanonical() * randCanonical(),
-							randCanonical() * randCanonical())));
+					list[i++] = new MovingSphere(center, center + vec3(0, 0.5* randCanonical(), 0), 0.0, 1.0,
+						0.2, new Lambertian(
+							vec3(randCanonical() * randCanonical(),
+								randCanonical() * randCanonical(),
+								randCanonical() * randCanonical())));
 				}
-				else if (chooseMat < 0.9) {
+				else if (chooseMat < 0.95) {
 					//metal
 					list[i++] = new Sphere(center, 0.2, new Metal(
 						vec3(0.5 * (1 + randCanonical()), 
@@ -98,9 +100,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 1200;
-	int ny = 800;
-	int ns = 500;
+	int nx = 400;
+	int ny = 200;
+	int ns = 20;
 	int n = 4;
 
 	// init world objects;
@@ -117,8 +119,8 @@ int main()
 	vec3 lookat(0, 0, 0);
 	//float distToFocus = (lookfrom - lookat).length();
 	float distToFocus = 10.0;
-	float aperture = 0.1;
-	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus);
+	float aperture = 0.0;
+	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
 
 
 	unsigned char *data = new unsigned char[nx * ny * n];
