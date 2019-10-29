@@ -30,7 +30,7 @@ const int RAY_TRACE_MAX_TIMES = 50;
 
 vec3 color(const Ray &r, Hitable *world, int depth) {
 	HitRecord rec;
-	if (world->hit(r, 0.0, MAX_RAY_HIT_DISTANCE, rec)) {
+	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
 		Ray scattered;
 		vec3 attenuation;
 		
@@ -54,7 +54,7 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 Hitable *randomScene() {
 	int n = 500;
 	Hitable **list = new Hitable *[n + 1];
-	list[0] = new Sphere(vec3(0, -500, -1), 500, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
+	list[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
 	int i = 1;
 	for (int a = -11; a < 11; a++)
 	{
@@ -98,9 +98,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 200;
-	int ny = 100;
-	int ns = 50;
+	int nx = 1200;
+	int ny = 800;
+	int ns = 500;
 	int n = 4;
 
 	// init world objects;
@@ -115,7 +115,8 @@ int main()
 
 	vec3 lookfrom(13, 2, 3);
 	vec3 lookat(0, 0, 0);
-	float distToFocus = (lookfrom - lookat).length();
+	//float distToFocus = (lookfrom - lookat).length();
+	float distToFocus = 10.0;
 	float aperture = 0.1;
 	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus);
 
