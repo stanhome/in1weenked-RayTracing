@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch04-Image Texture Mapping-Earth.png";
+const char *FILE_PATH = "output/next week/ch05-Image Texture Mapping-Earth.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
