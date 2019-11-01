@@ -52,3 +52,34 @@ public:
 	}
 
 };
+
+class ImageTexture : public Texture {
+public:
+	unsigned char *data;
+	int nx, ny;
+
+public:
+	ImageTexture(){}
+	ImageTexture(unsigned char *pixels, int width, int height)
+		:data(pixels), nx(width), ny(height) {}
+	virtual vec3 val(float u, float v, const vec3 &pos) const;
+};
+
+const int IMG_CHANEL = 3;
+
+vec3 ImageTexture::val(float u, float v, const vec3 &pos) const {
+	int i = u * nx;
+	int j = (1 - v) * ny - 0.001;
+	if (i < 0) i = 0;
+	if (j < 0) j = 0;
+	if (i > nx - 1) i = nx - 1;
+	if (j > ny - 1) j = ny - 1;
+	
+	int idx = IMG_CHANEL * i + IMG_CHANEL*nx * j;
+	float r = int(data[idx + 0]) / 255.0;
+	float g = int(data[idx + 1]) / 255.0;
+	float b = int(data[idx + 2]) / 255.0;
+
+	return vec3(r, g, b);
+}
+

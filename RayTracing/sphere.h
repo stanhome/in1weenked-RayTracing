@@ -19,6 +19,7 @@ private:
 		rec.t = t;
 		rec.matPtr = mat;
 		rec.p = r.pointAtParameter(t);
+		getSphereUV((rec.p - center) / radius, rec.u, rec.v);
 		rec.normal = (rec.p - center) / radius;
 	}
 };

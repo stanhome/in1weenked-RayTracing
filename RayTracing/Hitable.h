@@ -8,6 +8,7 @@ class Material;
 struct HitRecord {
 	// 碰撞射线的步长
 	float t;
+	float u , v;
 	// 射线与球的碰撞点
 	vec3 p;
 	// 碰撞点处的，球的法线（已归一化）

@@ -5,6 +5,10 @@
 #include "vec3.h"
 
 #define M_PI       3.14159265358979323846   // pi
+#define M_PI_2     1.57079632679489661923   // pi/2
+#define M_PI_4     0.785398163397448309616  // pi/4
+#define M_1_PI     0.318309886183790671538  // 1/pi
+#define M_2_PI     0.636619772367581343076  // 2/pi
 
 std::default_random_engine s_randGenerator;
 
@@ -67,10 +71,18 @@ bool refract(const vec3 &v, const vec3 &n, float niOverNt, vec3 &refracted) {
 	}
 }
 
+// ∑¥…‰∫Õ’€…‰
 float schlick(float cosine, float refIdx) {
 	float r0 = (1 - refIdx) / (1 + refIdx);
 	r0 = r0 * r0;
 	
 	return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
+void getSphereUV(const vec3 &pos, float &u, float &v) {
+	float phi = atan2(pos.z, pos.x); // -pi to pi
+	float theta = acos(pos.y); // return [0,pi], asin return [-pi/2,+pi/2]
+	u = 1 - (phi + M_PI) / (2 * M_PI);
+	v = 1 - theta / M_PI;
 }
 

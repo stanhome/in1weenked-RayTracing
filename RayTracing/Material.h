@@ -28,7 +28,7 @@ public:
 		// rec.p + rec.normal => 射线碰撞点的单位切球（单位球体与碰撞点相切）的球心
 		vec3 target = rec.p + rec.normal + randomInUnitSphere();
 		scattered = Ray(rec.p, target - rec.p);
-		attenuation = albedo->val(0, 0, rec.p);
+		attenuation = albedo->val(rec.u, rec.v, rec.p);
 
 		return true;
 	}

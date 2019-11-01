@@ -1,15 +1,17 @@
 ﻿// RayTracing.cpp : 定义控制台应用程序的入口点。
 //
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
 #include "stdafx.h"
 #include <iostream>
 #include <sstream>
 #include <thread>
-#include "stb/stb_image_write.h"
 #include <windows.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
 
 #include "utils.h"
 #include "ray.h"
@@ -23,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch04-Perlin Noise.png";
+const char *FILE_PATH = "output/next week/ch04-Image Texture Mapping-Earth.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -75,6 +77,14 @@ Hitable *generateWorld() {
 	retList[1] = new Sphere(vec3(0, 2, 0), 2, new Lambertian(perlinTexture));
 
 	return new HitableList(retList, 2);
+}
+
+Hitable *earth() {
+	int width, height, chanel;
+	unsigned char *textureData = stbi_load("res/earthmap.jpg", &width, &height, &chanel, 0);
+	Material *mat = new Lambertian(new ImageTexture(textureData, width, height));
+
+	return new Sphere(vec3(0, 0, 0), 2, mat);
 }
 
 Hitable *randomScene() {
@@ -143,22 +153,24 @@ int main()
 {
 	initUtils();
 
-	int nx = 400;
-	int ny = 200;
-	int ns = 20;
+	int nx = 800;
+	int ny = 800;
+	int ns = 100;
 	int n = 4;
 
 	// init world objects;
 	time_t now = time(0);
 	printf("[%s]random scene begin...\n", ctime(&now));
 
-	Hitable *world = generateWorld();
+	//Hitable *world = generateWorld();
+	Hitable *world = earth();
 	//Hitable *world = randomScene();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
 
 	vec3 lookfrom(13, 2, 3);
+	//vec3 lookfrom(3, 12, 3);
 	vec3 lookat(0, 0, 0);
 	//float distToFocus = (lookfrom - lookat).length();
 	float distToFocus = 10.0;
