@@ -23,7 +23,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch02-Bounding Volume Hierarchies.png";
+const char *FILE_PATH = "output/next week/ch03-Solid Textures.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -56,13 +56,13 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 Hitable *generateWorld() {
 	Hitable *list[5];
 	int i = 0;
-	list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
+	list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(new ConstantTexture(vec3(0.1, 0.2, 0.5))));
 	list[i++] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
 	list[i++] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
 	//list[i++] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
 
 	Hitable **retList = new Hitable *[2];
-	retList[0] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
+	retList[0] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(new ConstantTexture(vec3(0.8, 0.8, 0.0)))); // floor
 
 	//retList[1] = new HitableList(list, i);
 	retList[1] = new BvhNode(list, i, 0, 1);
@@ -71,9 +71,11 @@ Hitable *generateWorld() {
 }
 
 Hitable *randomScene() {
+	Texture *checker = new CheckerTexture(new ConstantTexture(vec3(0.2, 0.3, 0.1)), new ConstantTexture(vec3(0.9, 0.9, 0.9)));
+
 	int n = 500;
-	Hitable **list = new Hitable *[n + 1];
-	Hitable *floor = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
+	Hitable **list = new Hitable *[n];
+	Hitable *floor = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(checker)); // floor
 
 	int i = 0;
 	for (int a = -10; a < 10; a++)
@@ -86,10 +88,10 @@ Hitable *randomScene() {
 				if (chooseMat < 0.7) {
 					//diffuse
 					list[i++] = new MovingSphere(center, center + vec3(0, 0.5* randCanonical(), 0), 0.0, 1.0,
-						0.2, new Lambertian(
+						0.2, new Lambertian(new ConstantTexture(
 							vec3(randCanonical() * randCanonical(),
 								randCanonical() * randCanonical(),
-								randCanonical() * randCanonical())));
+								randCanonical() * randCanonical()))));
 				}
 				else if (chooseMat < 0.95) {
 					//metal
@@ -107,7 +109,7 @@ Hitable *randomScene() {
 	}
 
 	list[i++] = new Sphere(vec3(0, 1, 0), 1.0, new Dielectric(1.5));
-	list[i++] = new Sphere(vec3(-4, 1, 0), 1.0, new Lambertian(vec3(0.4, 0.2, 0.1)));
+	list[i++] = new Sphere(vec3(-4, 1, 0), 1.0, new Lambertian(new ConstantTexture(vec3(0.4, 0.2, 0.1))));
 	list[i++] = new Sphere(vec3(4, 1, 0), 1.0, new Metal(vec3(0.7, 0.6, 0.5)));
 
 

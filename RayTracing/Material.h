@@ -3,13 +3,14 @@
 #include "utils.h"
 #include "ray.h"
 #include "Hitable.h"
+#include "Texture.h"
 
 
 class Material {
 public:
 	/**
-	 * É¢Éä
-	 * @param attenuation, Ë¥¼õ
+	 * æ•£å°„
+	 * @param attenuation, è¡°å‡
 	*/
 	virtual bool scatter(const Ray &rIn, const HitRecord &rec, vec3 &attenuation, Ray &scattered) const = 0;
 };
@@ -17,17 +18,17 @@ public:
 
 class Lambertian : public Material {
 public:
-	vec3 albedo;
+	Texture *albedo;
 
 public:
-	Lambertian(const vec3 &a) : albedo(a) {}
+	Lambertian(Texture *a) : albedo(a) {}
 
 	virtual bool scatter(const Ray &rIn, const HitRecord &rec, vec3 &attenuation, Ray &scattered) const
 	{
-		// rec.p + rec.normal => ÉäÏßÅö×²µãµÄµ¥Î»ÇĞÇò£¨µ¥Î»ÇòÌåÓëÅö×²µãÏàÇĞ£©µÄÇòĞÄ
+		// rec.p + rec.normal => å°„çº¿ç¢°æ’ç‚¹çš„å•ä½åˆ‡çƒï¼ˆå•ä½çƒä½“ä¸ç¢°æ’ç‚¹ç›¸åˆ‡ï¼‰çš„çƒå¿ƒ
 		vec3 target = rec.p + rec.normal + randomInUnitSphere();
 		scattered = Ray(rec.p, target - rec.p);
-		attenuation = albedo;
+		attenuation = albedo->val(0, 0, rec.p);
 
 		return true;
 	}
@@ -35,9 +36,9 @@ public:
 
 class Metal : public Material {
 public:
-	//·´ÉäÂÊ
+	//åå°„ç‡
 	vec3 albedo;
-	// ´Ö²Ú¶È
+	// ç²—ç³™åº¦
 	float fuzz;
 
 public:
@@ -56,7 +57,7 @@ public:
 
 class Dielectric : public Material {
 public:
-	//ÕÛÉäÂÊ
+	//æŠ˜å°„ç‡
 	float refIdx;
 
 public:
@@ -72,14 +73,14 @@ public:
 		float cosine;
 
 		if (vec3::dot(rIn.direction(), rec.normal) > 0) {
-			//¹âÏßÓÉË® Ïò¿ÕÆø
+			//å…‰çº¿ç”±æ°´ å‘ç©ºæ°”
 			outwardNormal = -rec.normal;
 			niOverNt = refIdx;
 			//cosine = refIdx * vec3::dot(rIn.direction(), rec.normal) / rIn.direction().length();
 			cosine = vec3::dot(rIn.direction(), rec.normal);
 		}
 		else {
-			//¹âÏßÓÉ ¿ÕÆøÏòË®
+			//å…‰çº¿ç”± ç©ºæ°”å‘æ°´
 			outwardNormal = rec.normal;
 			niOverNt = 1.0 / refIdx;
 			cosine = -vec3::dot(rIn.direction(), rec.normal);
@@ -92,7 +93,7 @@ public:
 		}
 		else
 		{
-			// È«·´Éä
+			// å…¨åå°„
 			scattered = Ray(rec.p, reflected);
 			reflectProb = 1.0;
 		}
