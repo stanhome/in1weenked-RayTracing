@@ -23,7 +23,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch03-Solid Textures.png";
+const char *FILE_PATH = "output/next week/ch04-Perlin Noise.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -54,18 +54,25 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 }
 
 Hitable *generateWorld() {
-	Hitable *list[5];
-	int i = 0;
-	list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(new ConstantTexture(vec3(0.1, 0.2, 0.5))));
-	list[i++] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
-	list[i++] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
-	//list[i++] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
+	//Hitable *list[5];
+	//int i = 0;
+	//list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(new ConstantTexture(vec3(0.1, 0.2, 0.5))));
+	//list[i++] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
+	//list[i++] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	////list[i++] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
 
+	//Hitable **retList = new Hitable *[2];
+	//retList[0] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(new ConstantTexture(vec3(0.8, 0.8, 0.0)))); // floor
+
+	////retList[1] = new HitableList(list, i);
+	//retList[1] = new BvhNode(list, i, 0, 1);
+
+
+	// Perlin Noise
+	Texture *perlinTexture = new NoiseTexture(4);
 	Hitable **retList = new Hitable *[2];
-	retList[0] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(new ConstantTexture(vec3(0.8, 0.8, 0.0)))); // floor
-
-	//retList[1] = new HitableList(list, i);
-	retList[1] = new BvhNode(list, i, 0, 1);
+	retList[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(perlinTexture));
+	retList[1] = new Sphere(vec3(0, 2, 0), 2, new Lambertian(perlinTexture));
 
 	return new HitableList(retList, 2);
 }
@@ -145,8 +152,8 @@ int main()
 	time_t now = time(0);
 	printf("[%s]random scene begin...\n", ctime(&now));
 
-	//Hitable *world = generateWorld();
-	Hitable *world = randomScene();
+	Hitable *world = generateWorld();
+	//Hitable *world = randomScene();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));

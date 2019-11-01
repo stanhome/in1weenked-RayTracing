@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec3.h"
+#include "Perlin.h"
 
 class Texture {
 public:
@@ -34,4 +35,20 @@ public:
 	virtual vec3 val(float u, float v, const vec3 &pos) const {
 		return color;
 	}
+};
+
+class NoiseTexture : public Texture {
+public:
+	Perlin noise;
+	float scale;
+
+public:
+	NoiseTexture() {}
+	NoiseTexture(float sc) : scale(sc) {}
+	virtual vec3 val(float u, float v, const vec3 &pos) const {
+		//return vec3::ONE * 0.5 * (1 + noise.turb(scale * pos));
+		//return vec3::ONE * noise.turb(scale * pos);
+		return vec3::ONE * 0.5 * (1 + sin(scale * pos.z + 10 * noise.turb(pos))); // ¥Û¿Ì Ø
+	}
+
 };

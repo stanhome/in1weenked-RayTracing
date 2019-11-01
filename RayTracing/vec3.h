@@ -34,7 +34,7 @@ public:
 	// inline float operator[](int i) const { return e[i]; }
 	// inline float& operator[](int i) { return e[i]; }
 
-	inline vec3& operator+=(const vec3 &v2) {
+	inline vec3 &operator+=(const vec3 &v2) {
 		x += v2.x;
 		y += v2.y;
 		z += v2.z;
@@ -46,7 +46,15 @@ public:
 	//inline vec3& operator/=(const vec3 &v2);
 	//inline vec3& operator*=(const float t);
 
-	inline vec3& operator/=(const float t) {
+	inline vec3 &operator*=(const float t) {
+		x *= t;
+		y *= t;
+		z *= t;
+
+		return *this;
+	}
+
+	inline vec3 &operator/=(const float t) {
 		x /= t;
 		y /= t;
 		z /= t;
