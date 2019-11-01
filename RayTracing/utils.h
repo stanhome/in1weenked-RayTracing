@@ -13,6 +13,7 @@ void initUtils() {
 	s_randGenerator = std::default_random_engine(seed);
 }
 
+// return Floating point value in range [0, 1)
 float randCanonical() {
 	return std::generate_canonical<float, std::numeric_limits<float>::digits>(s_randGenerator);
 }

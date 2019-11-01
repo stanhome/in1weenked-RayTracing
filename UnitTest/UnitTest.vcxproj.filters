@@ -24,37 +24,10 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vec3.h">
+    <ClInclude Include="AABBTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="HitableList.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Hitable.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MovingSphere.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="aabb.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Bvh.h">
+    <ClInclude Include="miniUnitTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -62,7 +35,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="UnitTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

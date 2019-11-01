@@ -19,10 +19,11 @@
 #include "Camera.h"
 #include "Material.h"
 #include "MovingSphere.h"
+#include "Bvh.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch01-Motion Blur.png";
+const char *FILE_PATH = "output/next week/ch02-Bounding Volume Hierarchies.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -52,11 +53,29 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 	}
 }
 
+Hitable *generateWorld() {
+	Hitable *list[5];
+	int i = 0;
+	list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
+	list[i++] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
+	list[i++] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	//list[i++] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
+
+	Hitable **retList = new Hitable *[2];
+	retList[0] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
+
+	//retList[1] = new HitableList(list, i);
+	retList[1] = new BvhNode(list, i, 0, 1);
+
+	return new HitableList(retList, 2);
+}
+
 Hitable *randomScene() {
 	int n = 500;
 	Hitable **list = new Hitable *[n + 1];
-	list[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
-	int i = 1;
+	Hitable *floor = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(vec3(0.5, 0.5, 0.5))); // floor
+
+	int i = 0;
 	for (int a = -10; a < 10; a++)
 	{
 		for (int b = -10; b < 10; b++)
@@ -91,10 +110,25 @@ Hitable *randomScene() {
 	list[i++] = new Sphere(vec3(-4, 1, 0), 1.0, new Lambertian(vec3(0.4, 0.2, 0.1)));
 	list[i++] = new Sphere(vec3(4, 1, 0), 1.0, new Metal(vec3(0.7, 0.6, 0.5)));
 
-	return new HitableList(list, i);
+
+	Hitable **retList = new Hitable *[2];
+	retList[0] = floor;
+	//retList[1] = new HitableList(list, i);
+	retList[1] = new BvhNode(list, i, 0.0, 1.0);
+
+	return new HitableList(retList, 2);
 }
 
 #define MULTIPLE_RUN
+
+/*
+int nx = 800;
+int ny = 400;
+int ns = 20;
+
+no Bounding Volume Hierarchies speed up ==> well done. elapsed:374.214s
+with Bounding Volume Hierarchies speed up ==> well done. elapsed:156.208s
+*/
 
 int main()
 {
@@ -106,14 +140,14 @@ int main()
 	int n = 4;
 
 	// init world objects;
-	//Hitable *list[5];
-	//list[0] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(vec3(0.1, 0.2, 0.5)));
-	//list[1] = new Sphere(vec3(0, -100.5, -1), 100, new Lambertian(vec3(0.8, 0.8, 0.0))); // floor
-	//list[2] = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
-	//list[3] = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
-	//list[4] = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5)); // bubble
-	//Hitable *world = new HitableList(list, 5);
+	time_t now = time(0);
+	printf("[%s]random scene begin...\n", ctime(&now));
+
+	//Hitable *world = generateWorld();
 	Hitable *world = randomScene();
+
+	now = time(0);
+	printf("[%s]random scene end.\n", ctime(&now));
 
 	vec3 lookfrom(13, 2, 3);
 	vec3 lookat(0, 0, 0);

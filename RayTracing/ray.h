@@ -14,8 +14,8 @@ public:
 	Ray(const vec3 &a, const vec3 &b, float time=0.0): _origin(a), _direction(b), _time(time) {
 		_direction.normalize();
 	}
-	vec3 origin() const { return _origin; }
-	vec3 direction() const { return _direction; }
+	const vec3 &origin() const { return _origin; }
+	const vec3 &direction() const { return _direction; }
 	float time() const { return _time; }
 	vec3 pointAtParameter(float t) const { return _origin + t * _direction; }
 };

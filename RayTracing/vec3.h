@@ -21,6 +21,7 @@ public:
 	
 public:
 	vec3() {};
+	vec3(float xx): x(xx), y(xx), z(xx){}
 	vec3(float xx, float yy, float zz) :x(xx), y(yy), z(zz) {}
 
 

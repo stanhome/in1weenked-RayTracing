@@ -12,6 +12,7 @@ public:
 	Sphere() {};
 	Sphere(vec3 cen, float r, Material *m) : center(cen), radius(r), mat(m) {};
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
+	virtual bool boundingBox(float time0, float time1, AABB &box) const;
 
 private:
 	void assignHitRecord(HitRecord &rec, float t, const Ray &r) const {
@@ -49,4 +50,11 @@ bool Sphere::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
 	}
 
 	return false;
+}
+
+bool Sphere::boundingBox(float time0, float time1, AABB &box) const {
+	vec3 rVec(radius);
+	box = AABB(center - rVec, center + rVec);
+
+	return true;
 }
