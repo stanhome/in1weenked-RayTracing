@@ -2,7 +2,7 @@
 
 #include "utils.h"
 #include "ray.h"
-#include "Hitable.h"
+#include "Hittable.h"
 #include "Texture.h"
 
 

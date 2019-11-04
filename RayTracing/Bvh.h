@@ -1,12 +1,12 @@
 #pragma once
 
 #include "utils.h"
-#include "Hitable.h"
+#include "Hittable.h"
 
 int boxXCompare(const void *a, const void *b) {
 	AABB boxLeft, boxRight;
-	Hitable *ah = *(Hitable**)a;
-	Hitable *bh = *(Hitable**)b;
+	Hittable *ah = *(Hittable**)a;
+	Hittable *bh = *(Hittable**)b;
 
 	if (!ah->boundingBox(0, 0, boxLeft) || !bh->boundingBox(0, 0, boxRight))
 	{
@@ -21,8 +21,8 @@ int boxXCompare(const void *a, const void *b) {
 
 int boxYCompare(const void *a, const void *b) {
 	AABB boxLeft, boxRight;
-	Hitable *ah = *(Hitable**)a;
-	Hitable *bh = *(Hitable**)b;
+	Hittable *ah = *(Hittable**)a;
+	Hittable *bh = *(Hittable**)b;
 
 	if (!ah->boundingBox(0, 0, boxLeft) || !bh->boundingBox(0, 0, boxRight))
 	{
@@ -37,8 +37,8 @@ int boxYCompare(const void *a, const void *b) {
 
 int boxZCompare(const void *a, const void *b) {
 	AABB boxLeft, boxRight;
-	Hitable *ah = *(Hitable**)a;
-	Hitable *bh = *(Hitable**)b;
+	Hittable *ah = *(Hittable**)a;
+	Hittable *bh = *(Hittable**)b;
 
 	if (!ah->boundingBox(0, 0, boxLeft) || !bh->boundingBox(0, 0, boxRight))
 	{
@@ -52,23 +52,23 @@ int boxZCompare(const void *a, const void *b) {
 }
 
 //Bounding Volume Hierarchies
-class BvhNode : public Hitable {
+class BvhNode : public Hittable {
 public:
-	Hitable *left;
-	Hitable *right;
+	Hittable *left;
+	Hittable *right;
 	AABB box;
 
 public:
 	BvhNode() {}
-	BvhNode(Hitable **l, int n, float time0, float time1);
+	BvhNode(Hittable **l, int n, float time0, float time1);
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const;
 };
 
-BvhNode::BvhNode(Hitable **l, int n, float time0, float time1) {
+BvhNode::BvhNode(Hittable **l, int n, float time0, float time1) {
 	//int chooseAxis = int(3 * randCanonical());
 	//if (chooseAxis == 0)
-		qsort(l, n, sizeof(Hitable *), boxXCompare);
+		qsort(l, n, sizeof(Hittable *), boxXCompare);
 	//else if (chooseAxis == 1)
 	//	qsort(l, n, sizeof(Hitable *), boxYCompare);
 	//else

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Hitable.h"
+#include "Hittable.h"
 
 const float THICKNESS = 0.0001;
 
-class XYRect : public Hitable {
+class XYRect : public Hittable {
 public:
 	Material *mat;
 	float x0, x1, y0, y1, k;
@@ -15,7 +15,7 @@ public:
 	XYRect(float xx0, float xx1, float yy0, float yy1, float kk, Material *material)
 		: x0(xx0), x1(xx1), y0(yy0), y1(yy1), k(kk)
 		, w(x1 - x0), h(y1 - y0), mat(material) {
-			Hitable::name = "XYRect";
+			Hittable::name = "XYRect";
 		}
 
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const override;
@@ -48,7 +48,7 @@ bool XYRect::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
 	return false;
 }
 
-class XZRect : public Hitable {
+class XZRect : public Hittable {
 public:
 	Material *mat;
 	float x0, x1, z0, z1, k;
@@ -59,7 +59,7 @@ public:
 	XZRect(float xx0, float xx1, float zz0, float zz1, float kk, Material *material)
 		: x0(xx0), x1(xx1), z0(zz0), z1(zz1), k(kk)
 		, w(x1 - x0), h(z1 - z0), mat(material) {
-			Hitable::name = "XZRect";
+			Hittable::name = "XZRect";
 		};
 
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const override;
@@ -92,7 +92,7 @@ bool XZRect::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
 	return false;
 }
 
-class YZRect : public Hitable {
+class YZRect : public Hittable {
 public:
 	Material *mat;
 	float y0, y1, z0, z1, k;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "hitable.h"
+#include "Hittable.h"
 
-class Sphere : public Hitable {
+class Sphere : public Hittable {
 public:
 	vec3 center;
 	float radius;

@@ -16,7 +16,7 @@ struct HitRecord {
 	Material *matPtr;
 };
 
-class Hitable {
+class Hittable {
 public:
 	std::string name = "NaN";
 
@@ -26,12 +26,12 @@ public:
 };
 
 
-class FlipNormals : public Hitable {
+class FlipNormals : public Hittable {
 public:
-	Hitable *ptr;
+	Hittable *ptr;
 
 public:
-	FlipNormals(Hitable *p) : ptr(p) {}
+	FlipNormals(Hittable *p) : ptr(p) {}
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const override {
 		if (ptr->hit(r, tMin, tMax, rec))
 		{
@@ -48,13 +48,13 @@ public:
 };
 
 
-class Translate : public Hitable {
+class Translate : public Hittable {
 public:
-	Hitable *ptr;
+	Hittable *ptr;
 	vec3 offset;
 
 public:
-	Translate(Hitable *p, const vec3 &movedBy) : ptr(p), offset(movedBy) {};
+	Translate(Hittable *p, const vec3 &movedBy) : ptr(p), offset(movedBy) {};
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const override;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const override;
 };
@@ -81,16 +81,16 @@ bool Translate::boundingBox(float time0, float time1, AABB &box) const {
 }
 
 
-class RotateY : public Hitable {
+class RotateY : public Hittable {
 public:
-	Hitable *ptr;
+	Hittable *ptr;
 	float sinTheta;
 	float cosTheta;
 	bool hasBox;
 	AABB bbox;
 
 public:
-	RotateY(Hitable *p, float angle);
+	RotateY(Hittable *p, float angle);
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const override;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const override {
 		box = bbox;
@@ -98,7 +98,7 @@ public:
 	}
 };
 
-RotateY::RotateY(Hitable *p, float angle) : ptr(p) {
+RotateY::RotateY(Hittable *p, float angle) : ptr(p) {
 	float radians = (M_PI / 180.0) * angle;
 	sinTheta = sin(radians);
 	cosTheta = cos(radians);

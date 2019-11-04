@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Hitable.h"
+#include "Hittable.h"
 
-class MovingSphere : public Hitable {
+class MovingSphere : public Hittable {
 public:
 	vec3 center0, center1, centerScope;
 	float time0, time1, timeInterval;

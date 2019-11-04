@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Hitable.h"
-#include "HitableList.h"
+#include "Hittable.h"
+#include "HittableList.h"
 #include "PlanRect.h"
 
-class Box : public Hitable {
+class Box : public Hittable {
 public:
 	vec3 pmin, pmax;
-	Hitable *listPtr;
+	Hittable *listPtr;
 
 public:
 	Box() {}
@@ -20,7 +20,7 @@ public:
 };
 
 Box::Box(const vec3 &p0, const vec3 &p1, Material *mat) : pmin(p0), pmax(p1) {
-	Hitable **list = new Hitable*[6];
+	Hittable **list = new Hittable*[6];
 
 	// front
 	list[0] = new XYRect(p0.x, p1.x, p0.y, p1.y, p1.z, mat);
@@ -34,7 +34,7 @@ Box::Box(const vec3 &p0, const vec3 &p1, Material *mat) : pmin(p0), pmax(p1) {
 	list[4] = new YZRect(p0.y, p1.y, p0.z, p1.z, p1.x, mat);
 	list[5] = new FlipNormals(new YZRect(p0.y, p1.y, p0.z, p1.z, p0.x, mat));
 
-	listPtr = new HitableList(list, 6);
+	listPtr = new HittableList(list, 6);
 }
 
 bool Box::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {

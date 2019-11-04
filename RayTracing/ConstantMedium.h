@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Hitable.h"
+#include "Hittable.h"
 #include "Texture.h"
 
-class ConstantMedium : public Hitable {
+class ConstantMedium : public Hittable {
 public:
-	Hitable *boundary;
+	Hittable *boundary;
 	float density;
 	Material *mat;
 
 public:
-	ConstantMedium(Hitable *b, float d, Texture *a) : boundary(b), density(d) {
+	ConstantMedium(Hittable *b, float d, Texture *a) : boundary(b), density(d) {
 		mat = new Isotropic(a);
 	}
 

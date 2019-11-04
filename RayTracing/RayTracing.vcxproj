@@ -150,8 +150,8 @@
     <ClInclude Include="Bvh.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantMedium.h" />
-    <ClInclude Include="Hitable.h" />
-    <ClInclude Include="HitableList.h" />
+    <ClInclude Include="Hittable.h" />
+    <ClInclude Include="HittableList.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MovingSphere.h" />
     <ClInclude Include="Perlin.h" />

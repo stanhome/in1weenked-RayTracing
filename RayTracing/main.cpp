@@ -12,8 +12,8 @@
 
 #include "utils.h"
 #include "ray.h"
-#include "hitable.h"
-#include "HitableList.h"
+#include "Hittable.h"
+#include "HittableList.h"
 #include "sphere.h"
 #include "Camera.h"
 #include "Material.h"
@@ -25,14 +25,14 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch08-Volumes.png";
+const char *FILE_PATH = "output/next week/ch09-Final.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
 const int RAY_TRACE_MAX_TIMES = 50;
 
 
-vec3 color(const Ray &r, Hitable *world, int depth) {
+vec3 color(const Ray &r, Hittable *world, int depth) {
 	HitRecord rec;
 	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
 		Ray scattered;
@@ -58,7 +58,7 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 	}
 }
 
-Hitable *generateWorld() {
+Hittable *generateWorld() {
 	//Hitable *list[5];
 	//int i = 0;
 	//list[i++] = new Sphere(vec3(0, 0, -1), 0.5, new Lambertian(new ConstantTexture(vec3(0.1, 0.2, 0.5))));
@@ -75,14 +75,14 @@ Hitable *generateWorld() {
 
 	// Perlin Noise
 	Texture *perlinTexture = new NoiseTexture(4);
-	Hitable **retList = new Hitable *[2];
+	Hittable **retList = new Hittable *[2];
 	retList[0] = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(perlinTexture));
 	retList[1] = new Sphere(vec3(0, 2, 0), 2, new Lambertian(perlinTexture));
 
-	return new HitableList(retList, 2);
+	return new HittableList(retList, 2);
 }
 
-Hitable *earth() {
+Hittable *earth() {
 	int width, height, chanel;
 	unsigned char *textureData = stbi_load("res/earthmap.jpg", &width, &height, &chanel, 0);
 	Material *mat = new Lambertian(new ImageTexture(textureData, width, height));
@@ -90,20 +90,20 @@ Hitable *earth() {
 	return new Sphere(vec3(0, 0, 0), 2, mat);
 }
 
-Hitable *sampleLight() {
+Hittable *sampleLight() {
 	Texture *perText = new NoiseTexture(4);
-	Hitable **list = new Hitable*[4];
+	Hittable **list = new Hittable*[4];
 	int i = 0;
 	list[i++] = new Sphere(vec3(0, -1000, 0), 1000, new Lambertian(perText));
 	list[i++] = new Sphere(vec3(0, 2, 0), 2, new Lambertian(perText));
 	list[i++] = new Sphere(vec3(0, 7, 0), 2, new DiffuseLight(new ConstantTexture(vec3(4, 4, 4))));
 	list[i++] = new XYRect(3, 5, 1, 3, -2, new DiffuseLight(new ConstantTexture(vec3(4, 4, 4))));
 
-	return new HitableList(list, i);
+	return new HittableList(list, i);
 }
 
-Hitable *room() {
-	Hitable **list = new Hitable*[5];
+Hittable *room() {
+	Hittable **list = new Hittable*[5];
 	Material *red = new Lambertian(new ConstantTexture(vec3(0.65, 0.05, 0.05)));
 	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
 	Material *green = new Lambertian(new ConstantTexture(vec3(0.12, 0.45, 0.15)));
@@ -121,11 +121,11 @@ Hitable *room() {
 	// background
 	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 
-	return new HitableList(list, 5);
+	return new HittableList(list, 5);
 }
 
-Hitable *cornellBox() {
-	Hitable **list = new Hitable*[8];
+Hittable *cornellBox() {
+	Hittable **list = new Hittable*[8];
 	int i = 0;
 	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
 
@@ -145,11 +145,11 @@ Hitable *cornellBox() {
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
 		vec3(264, 0, 290));
 
-	return new HitableList(list, i);
+	return new HittableList(list, i);
 }
 
-Hitable *cornellSmoke() {
-	Hitable **list = new Hitable*[20];
+Hittable *cornellSmoke() {
+	Hittable **list = new Hittable*[20];
 	int i = 0;
 	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
 	// light
@@ -162,25 +162,32 @@ Hitable *cornellSmoke() {
 	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
 
 	// two blocks
-	Hitable *b1 = new Translate(
+	Hittable *b1 = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
 		vec3(130, 0, 65));
-	Hitable *b2 = new Translate(
+	Hittable *b2 = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
 		vec3(264, 0, 290));
 
 	list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(vec3::ONE));
 	list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(vec3::ZERO));
 
-	return new HitableList(list, i);
+	return new HittableList(list, i);
 }
 
-Hitable *randomScene() {
+//Hittable *nextWeekFinal() {
+//	int nb = 20;
+//	Hittable **list = new Hittable*[30];
+//
+//
+//}
+
+Hittable *randomScene() {
 	Texture *checker = new CheckerTexture(new ConstantTexture(vec3(0.2, 0.3, 0.1)), new ConstantTexture(vec3(0.9, 0.9, 0.9)));
 
 	int n = 500;
-	Hitable **list = new Hitable *[n];
-	Hitable *floor = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(checker)); // floor
+	Hittable **list = new Hittable *[n];
+	Hittable *floor = new Sphere(vec3(0, -1000, -1), 1000, new Lambertian(checker)); // floor
 
 	int i = 0;
 	for (int a = -10; a < 10; a++)
@@ -218,12 +225,12 @@ Hitable *randomScene() {
 	list[i++] = new Sphere(vec3(4, 1, 0), 1.0, new Metal(vec3(0.7, 0.6, 0.5)));
 
 
-	Hitable **retList = new Hitable *[2];
+	Hittable **retList = new Hittable *[2];
 	retList[0] = floor;
 	//retList[1] = new HitableList(list, i);
 	retList[1] = new BvhNode(list, i, 0.0, 1.0);
 
-	return new HitableList(retList, 2);
+	return new HittableList(retList, 2);
 }
 
 #define MULTIPLE_RUN
@@ -255,7 +262,7 @@ int main()
 	//Hitable *world = earth();
 	//Hitable *world = sampleLight();
 	//Hitable *world = cornellBox();
-	Hitable *world = cornellSmoke();
+	Hittable *world = cornellSmoke();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));

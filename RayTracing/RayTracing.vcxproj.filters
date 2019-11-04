@@ -33,12 +33,6 @@
     <ClInclude Include="sphere.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="HitableList.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Hitable.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -70,6 +64,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ConstantMedium.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Hittable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HittableList.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

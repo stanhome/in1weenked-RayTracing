@@ -1,20 +1,20 @@
 #pragma once
 
-#include "hitable.h"
+#include "Hittable.h"
 
-class HitableList : public Hitable {
+class HittableList : public Hittable {
 public:
-	Hitable **list;
+	Hittable **list;
 	int size;
 
 public:
-	HitableList() {}
-	HitableList(Hitable **l, int n) : list(l), size(n) {}
+	HittableList() {}
+	HittableList(Hittable **l, int n) : list(l), size(n) {}
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const;
 };
 
-bool HitableList::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
+bool HittableList::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
 	HitRecord temRec;
 
 	bool hitAnything = false;
@@ -33,7 +33,7 @@ bool HitableList::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) cons
 }
 
 
-bool HitableList::boundingBox(float time0, float time1, AABB &box) const
+bool HittableList::boundingBox(float time0, float time1, AABB &box) const
 {
 	if (size < 1) return false;
 
