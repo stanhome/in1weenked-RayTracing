@@ -122,6 +122,13 @@ inline vec3 operator/(const vec3 &lhs, const vec3 &rhs) {
 	return vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
 }
 
+// for debug
+inline std::ostream &operator<<(std::ostream &os, const vec3 &t) {
+	os << "(" << t.x << "," << t.y << "," << t.z << ")";
+
+	return os;
+}
+
 
 vec3 vec3::ZERO = vec3(0, 0, 0);
 vec3 vec3::ONE = vec3(1, 1, 1);

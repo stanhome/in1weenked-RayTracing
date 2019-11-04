@@ -110,6 +110,22 @@ public:
 	}
 };
 
+// 各向同性
+class Isotropic : public Material {
+public:
+	Texture *albedo;
+
+public:
+	Isotropic(Texture *a) : albedo(a) {}
+	virtual bool scatter(const Ray &rIn, const HitRecord &rec, vec3 &attenuation, Ray &scattered) const override {
+	
+		scattered = Ray(rec.p, randomInUnitSphere());
+		attenuation = albedo->val(rec.u, rec.v, rec.p);
+
+		return true;
+	}
+};
+
 //////////////////////////////////////////////////////////////////////////
 /// self-emit material
 

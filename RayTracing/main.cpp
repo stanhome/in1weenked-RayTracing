@@ -21,10 +21,11 @@
 #include "Bvh.h"
 #include "PlanRect.h"
 #include "Box.h"
+#include "ConstantMedium.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch07-Instances.png";
+const char *FILE_PATH = "output/next week/ch08-Volumes.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -101,25 +102,18 @@ Hitable *sampleLight() {
 	return new HitableList(list, i);
 }
 
-Hitable *cornellBox() {
-	Hitable **list = new Hitable*[8];
-	int i = 0;
+Hitable *room() {
+	Hitable **list = new Hitable*[5];
 	Material *red = new Lambertian(new ConstantTexture(vec3(0.65, 0.05, 0.05)));
 	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
 	Material *green = new Lambertian(new ConstantTexture(vec3(0.12, 0.45, 0.15)));
-	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
 
+	int i = 0;
 	// look from -Z to Z
 	// left 
 	list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 	//right
 	list[i++] = new YZRect(0, 555, 0, 555, 0, red);
-
-	// light
-	auto lightPlane = new XZRect(213, 343, 227, 332, 554, light);
-	lightPlane->name = "Top light";
-	list[i++] = lightPlane;
-
 	// top
 	list[i++] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
 	// bottom
@@ -127,7 +121,22 @@ Hitable *cornellBox() {
 	// background
 	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 
+	return new HitableList(list, 5);
+}
 
+Hitable *cornellBox() {
+	Hitable **list = new Hitable*[8];
+	int i = 0;
+	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
+
+	// light
+	auto lightPlane = new XZRect(213, 343, 227, 332, 554, light);
+	lightPlane->name = "Top light";
+	list[i++] = lightPlane;
+
+	list[i++] = room();
+
+	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
 	// two blocks
 	list[i++] = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
@@ -135,6 +144,33 @@ Hitable *cornellBox() {
 	list[i++] = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
 		vec3(264, 0, 290));
+
+	return new HitableList(list, i);
+}
+
+Hitable *cornellSmoke() {
+	Hitable **list = new Hitable*[20];
+	int i = 0;
+	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
+	// light
+	auto lightPlane = new XZRect(113, 443, 227, 332, 554, light);
+	lightPlane->name = "Top light";
+	list[i++] = lightPlane;
+
+	list[i++] = room();
+
+	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
+
+	// two blocks
+	Hitable *b1 = new Translate(
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
+		vec3(130, 0, 65));
+	Hitable *b2 = new Translate(
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
+		vec3(264, 0, 290));
+
+	list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(vec3::ONE));
+	list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(vec3::ZERO));
 
 	return new HitableList(list, i);
 }
@@ -205,9 +241,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 300;
-	int ny = 300;
-	int ns = 500;
+	int nx = 800;
+	int ny = 800;
+	int ns = 50;
 	int n = 4;
 
 	// init world objects;
@@ -218,7 +254,8 @@ int main()
 	//Hitable *world = randomScene();
 	//Hitable *world = earth();
 	//Hitable *world = sampleLight();
-	Hitable *world = cornellBox();
+	//Hitable *world = cornellBox();
+	Hitable *world = cornellSmoke();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));

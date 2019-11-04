@@ -6,12 +6,12 @@
 class Material;
 
 struct HitRecord {
-	// Åö×²ÉäÏßµÄ²½³¤
+	// 碰撞射线的步长
 	float t;
 	float u , v;
-	// ÉäÏßÓëÇòµÄÅö×²µã
+	// 射线与球的碰撞点
 	vec3 p;
-	// Åö×²µã´¦µÄ£¬ÇòµÄ·¨Ïß£¨ÒÑ¹éÒ»»¯£©
+	// 碰撞点处的，球的法线（已归一化）
 	vec3 normal;
 	Material *matPtr;
 };

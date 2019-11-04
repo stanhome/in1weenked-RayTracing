@@ -149,6 +149,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Bvh.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConstantMedium.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="Material.h" />
