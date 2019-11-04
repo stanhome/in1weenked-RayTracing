@@ -1,7 +1,4 @@
-﻿// RayTracing.cpp : 定义控制台应用程序的入口点。
-//
-
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include <iostream>
 #include <sstream>
 #include <thread>
@@ -23,10 +20,11 @@
 #include "MovingSphere.h"
 #include "Bvh.h"
 #include "PlanRect.h"
+#include "Box.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch06-Rectangles and Lights.png";
+const char *FILE_PATH = "output/next week/ch07-Instances.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -104,7 +102,7 @@ Hitable *sampleLight() {
 }
 
 Hitable *cornellBox() {
-	Hitable **list = new Hitable*[6];
+	Hitable **list = new Hitable*[8];
 	int i = 0;
 	Material *red = new Lambertian(new ConstantTexture(vec3(0.65, 0.05, 0.05)));
 	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
@@ -112,7 +110,6 @@ Hitable *cornellBox() {
 	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
 
 	// look from -Z to Z
-
 	// left 
 	list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 	//right
@@ -129,6 +126,15 @@ Hitable *cornellBox() {
 	list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 	// background
 	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+
+
+	// two blocks
+	list[i++] = new Translate(
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
+		vec3(130, 0, 65));
+	list[i++] = new Translate(
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
+		vec3(264, 0, 290));
 
 	return new HitableList(list, i);
 }
@@ -201,7 +207,7 @@ int main()
 
 	int nx = 300;
 	int ny = 300;
-	int ns = 50;
+	int ns = 500;
 	int n = 4;
 
 	// init world objects;
