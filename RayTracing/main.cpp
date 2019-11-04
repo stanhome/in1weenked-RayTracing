@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch09-Final.png";
+const char *FILE_PATH = "output/next week/ch08-Volumes.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -151,9 +151,9 @@ Hittable *cornellBox() {
 Hittable *cornellSmoke() {
 	Hittable **list = new Hittable*[20];
 	int i = 0;
-	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
+	Material *light = new DiffuseLight(new ConstantTexture(vec3(7, 7, 7)));
 	// light
-	auto lightPlane = new XZRect(113, 443, 227, 332, 554, light);
+	auto lightPlane = new XZRect(113, 443, 127, 432, 554, light);
 	lightPlane->name = "Top light";
 	list[i++] = lightPlane;
 
@@ -175,12 +175,69 @@ Hittable *cornellSmoke() {
 	return new HittableList(list, i);
 }
 
-//Hittable *nextWeekFinal() {
-//	int nb = 20;
-//	Hittable **list = new Hittable*[30];
-//
-//
-//}
+Hittable *finalNextWeek() {
+	int nb = 20;
+	Hittable **list = new Hittable*[30];
+	Hittable **boxList = new Hittable*[10000];
+	Hittable **boxList2 = new Hittable*[10000];
+
+	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
+	Material *ground = new Lambertian(new ConstantTexture(vec3(0.48, 0.83, 0.53)));
+	// generate ground
+	int b = 0;
+	for (int i = 0; i < nb; i++)
+	{
+		for (int j = 0; j < nb; j++)
+		{
+			float w = 100;
+			float x0 = -1000 + i * w;
+			float z0 = -1000 + j * w;
+			float y0 = 0;
+			float x1 = x0 + w;
+			float y1 = 100 * (randCanonical() + 0.01);
+			float z1 = z0 + w;
+			boxList[b++] = new Box(vec3(x0, y0, z0), vec3(x1, y1, z1), ground);
+		}
+	}
+
+	int l = 0;
+	list[l++] = new BvhNode(boxList, b, 0, 1);
+	// light
+	Material *light = new DiffuseLight(new ConstantTexture(vec3(7, 7, 7)));
+	list[l++] = new XZRect(123, 423, 147, 412, 554, light);
+
+	vec3 center(400, 400, 200);
+	list[l++] = new MovingSphere(center, center + vec3(30, 0, 0), 0, 1, 50, 
+		new Lambertian(new ConstantTexture(vec3(0.7, 0.3, 0.1))));
+	list[l++] = new Sphere(vec3(260, 150, 45), 50, new Dielectric(1.5));
+	list[l++] = new Sphere(vec3(0, 150, 145), 50, new Metal(vec3(0.8, 0.8, 0.9), 10.0));
+
+	Hittable *boundary = new Sphere(vec3(360, 150, 145), 70, new Dielectric(1.5));
+	list[l++] = boundary;
+	list[l++] = new ConstantMedium(boundary, 0.2, new ConstantTexture(vec3(0.2, 0.4, 0.9)));
+
+	boundary = new Sphere(vec3(0, 0, 0), 5000, new Dielectric(1.5));
+	list[l++] = new ConstantMedium(boundary, 0.0001, new ConstantTexture(vec3(1.0, 1.0, 1.0)));
+
+	int width, height, chanel;
+	unsigned char *textureData = stbi_load("res/earthmap.jpg", &width, &height, &chanel, 0);
+	Material *emat = new Lambertian(new ImageTexture(textureData, width, height));
+	list[l++] = new Sphere(vec3(400, 200, 400), 100, emat);
+	Texture *perText = new NoiseTexture(0.1);
+	list[l++] = new Sphere(vec3(220, 280, 300), 80, new Lambertian(perText));
+
+	int ns = 1000;
+	for (int j = 0; j < ns; j++)
+	{
+		boxList2[j] = new Sphere(
+			vec3(165 * randCanonical(), 165 * randCanonical(), 165 * randCanonical()),
+			10, white);
+	}
+	list[l++] = new Translate(new RotateY(
+		new BvhNode(boxList2, ns, 0.0, 1.0), 15), vec3(-100, 270, 395));
+
+	return new HittableList(list, l);
+}
 
 Hittable *randomScene() {
 	Texture *checker = new CheckerTexture(new ConstantTexture(vec3(0.2, 0.3, 0.1)), new ConstantTexture(vec3(0.9, 0.9, 0.9)));
@@ -250,7 +307,7 @@ int main()
 
 	int nx = 800;
 	int ny = 800;
-	int ns = 50;
+	int ns = 200;
 	int n = 4;
 
 	// init world objects;
