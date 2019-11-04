@@ -13,6 +13,7 @@ public:
 	 * @param attenuation, 衰减
 	*/
 	virtual bool scatter(const Ray &rIn, const HitRecord &rec, vec3 &attenuation, Ray &scattered) const = 0;
+	virtual vec3 emitted(float u, float v, const vec3 &pos) const { return vec3::ZERO; }
 };
 
 
@@ -109,4 +110,21 @@ public:
 	}
 };
 
+//////////////////////////////////////////////////////////////////////////
+/// self-emit material
+
+class DiffuseLight : public Material {
+public:
+	Texture *emit;
+
+public:
+	DiffuseLight(Texture *e) : emit(e) {}
+	virtual bool scatter(const Ray &rIn, const HitRecord &rec, vec3 &attenuation, Ray &scattered) const override {
+		return false;
+	}
+
+	virtual vec3 emitted(float u, float v, const vec3 &pos) const override{
+		return emit->val(u, v, pos);
+	}
+};
 

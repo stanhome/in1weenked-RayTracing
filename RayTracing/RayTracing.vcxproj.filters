@@ -63,6 +63,9 @@
     <ClInclude Include="Perlin.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PlanRect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

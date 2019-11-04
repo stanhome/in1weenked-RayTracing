@@ -22,10 +22,11 @@
 #include "Material.h"
 #include "MovingSphere.h"
 #include "Bvh.h"
+#include "PlanRect.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch05-Image Texture Mapping-Earth.png";
+const char *FILE_PATH = "output/next week/ch06-Rectangles and Lights.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -37,21 +38,24 @@ vec3 color(const Ray &r, Hitable *world, int depth) {
 	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
 		Ray scattered;
 		vec3 attenuation;
-		
+		vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.p);
+
 		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, attenuation, scattered))
 		{
 			return attenuation * color(scattered, world, depth + 1);
 		}
 		else {
-			return vec3(0, 0, 0);
+			return emitted;
 		}
 	}
 	else {
 		// sky background
-		vec3 direction = r.direction();
-		float t = 0.5 * direction.y + 0.5;
+		//vec3 direction = r.direction();
+		//float t = 0.5 * direction.y + 0.5;
 
-		return (1.0 - t) * vec3::ONE + t * vec3(0.5, 0.7, 1.0);
+		//return (1.0 - t) * vec3::ONE + t * vec3(0.5, 0.7, 1.0);
+
+		return vec3::ZERO;
 	}
 }
 
@@ -85,6 +89,48 @@ Hitable *earth() {
 	Material *mat = new Lambertian(new ImageTexture(textureData, width, height));
 
 	return new Sphere(vec3(0, 0, 0), 2, mat);
+}
+
+Hitable *sampleLight() {
+	Texture *perText = new NoiseTexture(4);
+	Hitable **list = new Hitable*[4];
+	int i = 0;
+	list[i++] = new Sphere(vec3(0, -1000, 0), 1000, new Lambertian(perText));
+	list[i++] = new Sphere(vec3(0, 2, 0), 2, new Lambertian(perText));
+	list[i++] = new Sphere(vec3(0, 7, 0), 2, new DiffuseLight(new ConstantTexture(vec3(4, 4, 4))));
+	list[i++] = new XYRect(3, 5, 1, 3, -2, new DiffuseLight(new ConstantTexture(vec3(4, 4, 4))));
+
+	return new HitableList(list, i);
+}
+
+Hitable *cornellBox() {
+	Hitable **list = new Hitable*[6];
+	int i = 0;
+	Material *red = new Lambertian(new ConstantTexture(vec3(0.65, 0.05, 0.05)));
+	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
+	Material *green = new Lambertian(new ConstantTexture(vec3(0.12, 0.45, 0.15)));
+	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
+
+	// look from -Z to Z
+
+	// left 
+	list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
+	//right
+	list[i++] = new YZRect(0, 555, 0, 555, 0, red);
+
+	// light
+	auto lightPlane = new XZRect(213, 343, 227, 332, 554, light);
+	lightPlane->name = "Top light";
+	list[i++] = lightPlane;
+
+	// top
+	list[i++] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
+	// bottom
+	list[i++] = new XZRect(0, 555, 0, 555, 0, white);
+	// background
+	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+
+	return new HitableList(list, i);
 }
 
 Hitable *randomScene() {
@@ -153,9 +199,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 800;
-	int ny = 800;
-	int ns = 100;
+	int nx = 300;
+	int ny = 300;
+	int ns = 50;
 	int n = 4;
 
 	// init world objects;
@@ -163,20 +209,24 @@ int main()
 	printf("[%s]random scene begin...\n", ctime(&now));
 
 	//Hitable *world = generateWorld();
-	Hitable *world = earth();
 	//Hitable *world = randomScene();
+	//Hitable *world = earth();
+	//Hitable *world = sampleLight();
+	Hitable *world = cornellBox();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
 
-	vec3 lookfrom(13, 2, 3);
-	//vec3 lookfrom(3, 12, 3);
-	vec3 lookat(0, 0, 0);
+	//vec3 lookfrom(13, 2, 3);
+	//vec3 lookat(0, 2, 0);
+
+	vec3 lookfrom(278, 278, -800);
+	vec3 lookat(278, 278, 0);
 	//float distToFocus = (lookfrom - lookat).length();
 	float distToFocus = 10.0;
+	float vfov = 40.0;
 	float aperture = 0.0;
-	Camera camera(lookfrom, lookat, 20, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
-
+	Camera camera(lookfrom, lookat, vfov, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
 
 	unsigned char *data = new unsigned char[nx * ny * n];
 	auto draw = [&](int yStart, int yEnd) {

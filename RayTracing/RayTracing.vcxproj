@@ -153,6 +153,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="MovingSphere.h" />
     <ClInclude Include="Perlin.h" />
+    <ClInclude Include="PlanRect.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="stdafx.h" />
