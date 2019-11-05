@@ -202,6 +202,7 @@ Hittable *finalNextWeek() {
 
 	int l = 0;
 	list[l++] = new BvhNode(boxList, b, 0, 1);
+
 	// light
 	Material *light = new DiffuseLight(new ConstantTexture(vec3(7, 7, 7)));
 	list[l++] = new XZRect(123, 423, 147, 412, 554, light);
@@ -292,6 +293,25 @@ Hittable *randomScene() {
 	return new HittableList(retList, 2);
 }
 
+vec3 focusRotate(const vec3 &lookFrom, const vec3 &lookAt, float rotateYDegree)
+{
+	vec3 look = lookFrom - lookAt;
+
+	float cameraRotateYFocusObject = DEG_2_RAD * (rotateYDegree);
+	float sinTheta = sin(cameraRotateYFocusObject);
+	float cosTheat = cos(cameraRotateYFocusObject);
+
+	float x = look.x * cosTheat - look.z * sinTheta;
+	float z = look.x * sinTheta + look.z *cosTheat;
+
+	look.x = x;
+	look.z = z;
+
+	look += lookAt;
+
+	return look;
+}
+
 #define MULTIPLE_RUN
 
 /*
@@ -332,11 +352,13 @@ int main()
 
 	vec3 lookfrom(278, 278, -800);
 	vec3 lookat(278, 278, 0);
+	vec3 lookfromRotate = focusRotate(lookfrom, lookat, 20);
+
 	//float distToFocus = (lookfrom - lookat).length();
 	float distToFocus = 10.0;
 	float vfov = 40.0;
 	float aperture = 0.0;
-	Camera camera(lookfrom, lookat, vfov, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
+	Camera camera(lookfromRotate, lookat, vfov, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
 
 	unsigned char *data = new unsigned char[nx * ny * n];
 	auto draw = [&](int yStart, int yEnd) {

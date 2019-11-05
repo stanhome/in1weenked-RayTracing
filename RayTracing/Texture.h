@@ -48,7 +48,7 @@ public:
 	virtual vec3 val(float u, float v, const vec3 &pos) const {
 		//return vec3::ONE * 0.5 * (1 + noise.turb(scale * pos));
 		//return vec3::ONE * noise.turb(scale * pos);
-		return vec3::ONE * 0.5 * (1 + sin(scale * pos.z + 10 * noise.turb(pos))); // 大理石
+		return vec3::ONE * 0.5 * (1 + sin(scale * pos.x + 5 * noise.turb(scale * pos))); // 大理石
 	}
 
 };

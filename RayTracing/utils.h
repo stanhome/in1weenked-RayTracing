@@ -10,6 +10,8 @@
 #define M_1_PI     0.318309886183790671538  // 1/pi
 #define M_2_PI     0.636619772367581343076  // 2/pi
 
+#define DEG_2_RAD  0.017453292519943295770	// pi / 180
+
 std::default_random_engine s_randGenerator;
 
 void initUtils() {

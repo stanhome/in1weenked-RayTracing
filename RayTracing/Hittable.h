@@ -99,7 +99,7 @@ public:
 };
 
 RotateY::RotateY(Hittable *p, float angle) : ptr(p) {
-	float radians = (M_PI / 180.0) * angle;
+	float radians = DEG_2_RAD * angle;
 	sinTheta = sin(radians);
 	cosTheta = cos(radians);
 
