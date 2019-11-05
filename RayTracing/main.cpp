@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch08-Volumes.png";
+const char *FILE_PATH = "output/next week/ch09-final.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -305,9 +305,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 800;
-	int ny = 800;
-	int ns = 200;
+	int nx = 400;
+	int ny = 400;
+	int ns = 20;
 	int n = 4;
 
 	// init world objects;
@@ -319,7 +319,8 @@ int main()
 	//Hitable *world = earth();
 	//Hitable *world = sampleLight();
 	//Hitable *world = cornellBox();
-	Hittable *world = cornellSmoke();
+	//Hittable *world = cornellSmoke();
+	Hittable *world = finalNextWeek();
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
