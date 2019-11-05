@@ -207,8 +207,9 @@ Hittable *finalNextWeek() {
 	list[l++] = new XZRect(123, 423, 147, 412, 554, light);
 
 	vec3 center(400, 400, 200);
-	list[l++] = new MovingSphere(center, center + vec3(30, 0, 0), 0, 1, 50, 
+	list[l++] = new MovingSphere(center, center + vec3(30, 0, 0), 0, 1, 50,
 		new Lambertian(new ConstantTexture(vec3(0.7, 0.3, 0.1))));
+
 	list[l++] = new Sphere(vec3(260, 150, 45), 50, new Dielectric(1.5));
 	list[l++] = new Sphere(vec3(0, 150, 145), 50, new Metal(vec3(0.8, 0.8, 0.9), 10.0));
 
@@ -223,6 +224,7 @@ Hittable *finalNextWeek() {
 	unsigned char *textureData = stbi_load("res/earthmap.jpg", &width, &height, &chanel, 0);
 	Material *emat = new Lambertian(new ImageTexture(textureData, width, height));
 	list[l++] = new Sphere(vec3(400, 200, 400), 100, emat);
+
 	Texture *perText = new NoiseTexture(0.1);
 	list[l++] = new Sphere(vec3(220, 280, 300), 80, new Lambertian(perText));
 
@@ -307,7 +309,7 @@ int main()
 
 	int nx = 400;
 	int ny = 400;
-	int ns = 20;
+	int ns = 100;
 	int n = 4;
 
 	// init world objects;
@@ -362,9 +364,9 @@ int main()
 				int ig = int(255.99 * col.g());
 				int ib = int(255.99 * col.b());
 
-				data[j *nx * n + i * n + 0] = ir;
-				data[j *nx * n + i * n + 1] = ig;
-				data[j *nx * n + i * n + 2] = ib;
+				data[j *nx * n + i * n + 0] = ir > 255 ? 255 : ir;
+				data[j *nx * n + i * n + 1] = ig > 255 ? 255 : ig;
+				data[j *nx * n + i * n + 2] = ib > 255 ? 255 : ib;
 				data[j *nx * n + i * n + 3] = 255;
 			}
 		}
