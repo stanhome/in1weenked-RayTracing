@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch09-final.png";
+const char *FILE_PATH = "output/next week/ch09-final_ns_10000.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -222,9 +222,9 @@ Hittable *finalNextWeek() {
 	list[l++] = new ConstantMedium(boundary, 0.0001, new ConstantTexture(vec3(1.0, 1.0, 1.0)));
 
 	int width, height, chanel;
-	unsigned char *textureData = stbi_load("res/earthmap.jpg", &width, &height, &chanel, 0);
+	unsigned char *textureData = stbi_load("res/tea.jpg", &width, &height, &chanel, 0);
 	Material *emat = new Lambertian(new ImageTexture(textureData, width, height));
-	list[l++] = new Sphere(vec3(400, 200, 400), 100, emat);
+	list[l++] = new Translate(new RotateY(new Sphere(vec3::ZERO, 100, emat), 45), vec3(400, 200, 400));
 
 	Texture *perText = new NoiseTexture(0.1);
 	list[l++] = new Sphere(vec3(220, 280, 300), 80, new Lambertian(perText));
@@ -329,7 +329,7 @@ int main()
 
 	int nx = 400;
 	int ny = 400;
-	int ns = 100;
+	int ns = 200;
 	int n = 4;
 
 	// init world objects;
