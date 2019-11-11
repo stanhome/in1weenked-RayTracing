@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/next week/ch09-final_ns_10000.png";
+const char *FILE_PATH = "output/the rest of your life/ch01-simple monte carlo program.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
