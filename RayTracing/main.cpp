@@ -327,9 +327,9 @@ int main()
 {
 	initUtils();
 
-	int nx = 400;
-	int ny = 400;
-	int ns = 200;
+	int nx = 800;
+	int ny = 800;
+	int ns = 10000;
 	int n = 4;
 
 	// init world objects;
