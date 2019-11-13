@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/the rest of your life/ch01-simple monte carlo program.png";
+const char *FILE_PATH = "output/the rest of your life/ch06-Importance Sampling Materials.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -36,12 +36,13 @@ vec3 color(const Ray &r, Hittable *world, int depth) {
 	HitRecord rec;
 	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
 		Ray scattered;
-		vec3 attenuation;
+		vec3 albedo;
 		vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.p);
+		float pdf;
 
-		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, attenuation, scattered))
+		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdf))
 		{
-			return attenuation * color(scattered, world, depth + 1);
+			return emitted + albedo * rec.matPtr->scatteringPDF(r, rec, scattered) * color(scattered, world, depth + 1) / pdf;
 		}
 		else {
 			return emitted;
@@ -124,7 +125,7 @@ Hittable *room() {
 	return new HittableList(list, 5);
 }
 
-Hittable *cornellBox() {
+void cornellBox(Hittable **scene, Camera **camera, float aspect) {
 	Hittable **list = new Hittable*[8];
 	int i = 0;
 	Material *light = new DiffuseLight(new ConstantTexture(vec3(15, 15, 15)));
@@ -143,9 +144,18 @@ Hittable *cornellBox() {
 		vec3(130, 0, 65));
 	list[i++] = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
-		vec3(264, 0, 290));
+		vec3(265, 0, 295));
 
-	return new HittableList(list, i);
+	*scene = new HittableList(list, i);
+
+
+	vec3 lookfrom(278, 278, -800);
+	vec3 lookat(278, 278, 0);
+	float distanceToFocus = 10.0;
+	float aperture = 0.0;
+	float vfov = 40.0;
+	//vec3 lookfromRotate = focusRotate(lookfrom, lookat, 20);
+	*camera = new Camera(lookfrom, lookat, vfov, aspect, aperture, distanceToFocus, 0.0, 1.0);
 }
 
 Hittable *cornellSmoke() {
@@ -327,38 +337,22 @@ int main()
 {
 	initUtils();
 
-	int nx = 800;
-	int ny = 800;
-	int ns = 10000;
+	int nx = 500;
+	int ny = 500;
+	int ns = 10;
 	int n = 4;
 
 	// init world objects;
 	time_t now = time(0);
 	printf("[%s]random scene begin...\n", ctime(&now));
 
-	//Hitable *world = generateWorld();
-	//Hitable *world = randomScene();
-	//Hitable *world = earth();
-	//Hitable *world = sampleLight();
-	//Hitable *world = cornellBox();
-	//Hittable *world = cornellSmoke();
-	Hittable *world = finalNextWeek();
+	Hittable *world;
+	Camera *camera;
+	float aspect = float(ny) / float(nx);
+	cornellBox(&world, &camera, aspect);
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
-
-	//vec3 lookfrom(13, 2, 3);
-	//vec3 lookat(0, 2, 0);
-
-	vec3 lookfrom(278, 278, -800);
-	vec3 lookat(278, 278, 0);
-	vec3 lookfromRotate = focusRotate(lookfrom, lookat, 20);
-
-	//float distToFocus = (lookfrom - lookat).length();
-	float distToFocus = 10.0;
-	float vfov = 40.0;
-	float aperture = 0.0;
-	Camera camera(lookfromRotate, lookat, vfov, float(nx) / float(ny), aperture, distToFocus, 0.0, 1.0);
 
 	unsigned char *data = new unsigned char[nx * ny * n];
 	auto draw = [&](int yStart, int yEnd) {
@@ -372,7 +366,7 @@ int main()
 				{
 					float u = float(i + randCanonical()) / float(nx);
 					float v = float(j + randCanonical()) / float(ny);
-					Ray r = camera.getRay(u, v);
+					Ray r = camera->getRay(u, v);
 					//vec3 p = r.pointAtParameter(2.0);
 					col += color(r, world, 0);
 				}
