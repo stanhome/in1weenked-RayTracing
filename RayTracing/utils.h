@@ -28,6 +28,7 @@ float randCanonical() {
 //////////////////////////////////////////////////////////////////////////
 // geometry math
 
+// return 在单位球内的 向量
 vec3 randomInUnitSphere() {
 	vec3 p;
 	do
@@ -36,6 +37,17 @@ vec3 randomInUnitSphere() {
 	} while (vec3::dot(p, p) >= 1.0);
 
 	return p;
+}
+
+// return 在单位球表面上的 向量
+vec3 randomOnUnitSphere() {
+	vec3 p;
+	do 
+	{
+		p = 2.0 * vec3(randCanonical(), randCanonical(), randCanonical()) - vec3(1, 1, 1);
+	} while (vec3::dot(p, p) >= 1.0);
+
+	return p.normalized();
 }
 
 vec3 randomInUnitDisk() {

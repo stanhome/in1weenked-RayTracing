@@ -24,7 +24,6 @@ void estimatePi()
 	}
 
 	std::cout << "Estimate of PI = " << 4 * float(insideCircleCount) / N << std::endl;
-	getchar();
 }
 
 void estimatePi2()
@@ -76,14 +75,75 @@ void estimatePi3()
 
 	std::cout << "Regular Estimate of PI = " << 4 * float(insideCircleCount) / (SQRT_N * SQRT_N) << std::endl;
 	std::cout << "Stratified Estimate of PI = " << 4 * float(insideCircleStratified) / (SQRT_N * SQRT_N) << std::endl;
-	getchar();
 }
+
+
+void integral0() {
+	const int N = 1000000; //100w
+	float sum = 0;
+	for (int i = 0; i < N; ++i)
+	{
+		float x = 2 * randCanonical();
+		sum += x * x;
+	}
+
+	std::cout << "I = " << 2 * sum / N << std::endl;
+}
+
+inline float pdf(float x) {
+	//return 0.5 * x;
+	//return 0.5;
+	return 3 * x * x / 8;
+}
+
+void integral() {
+	//const int N = 1000000; //100w
+	const int N = 1; //100w
+	float sum = 0;
+	for (int i = 0; i < N; ++i)
+	{
+		//float x = sqrt(4 * randCanonical());
+		//float x = 2 * randCanonical();
+		float x = pow(8 * randCanonical(), 1 / 3);
+		sum += x * x / pdf(x);
+	}
+
+	std::cout << "I = " << sum / N << std::endl;
+}
+
+inline float pdfVec(const vec3 &p)
+{
+	return 1 / ( 4 * M_PI);
+}
+
+void integralPhere() {
+	const int N = 1000000; //100w
+	float sum = 0;
+	for (int i = 0; i < N; ++i)
+	{
+		vec3 d = randomOnUnitSphere();
+		float consineSquared = d.z * d.z;
+		sum += consineSquared / pdfVec(d);
+	}
+
+	std::cout << "I = " << sum / N << std::endl;
+}
+//I = 4.18885 ¼´ 4¦Ð/3
+
+
 
 int main()
 {
 	initUtils();
 	//estimatePi();
 	//estimatePi2();
-	estimatePi3();
+	//estimatePi3();
+
+	//integral0();
+	//integral();
+
+	integralPhere();
+
+	getchar();
 }
 
