@@ -4,6 +4,7 @@
 
 #include "vec3.h"
 
+#define M_2PI	   6.28318530717958647692	// 2 * pi
 #define M_PI       3.14159265358979323846   // pi
 #define M_PI_2     1.57079632679489661923   // pi/2
 #define M_PI_4     0.785398163397448309616  // pi/4
@@ -48,6 +49,18 @@ vec3 randomOnUnitSphere() {
 	} while (vec3::dot(p, p) >= 1.0);
 
 	return p.normalized();
+}
+
+vec3 randomCosineDirection() {
+	float r1 = randCanonical();
+	float r2 = randCanonical();
+
+	float z = sqrt(1 - r2); // cos(theta)
+	float phi = M_2PI * r1;
+	float x = cos(phi) * sqrt(r2);
+	float y = sin(phi) * sqrt(r2);
+
+	return vec3(x, y, z);
 }
 
 vec3 randomInUnitDisk() {

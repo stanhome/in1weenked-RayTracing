@@ -154,6 +154,7 @@
     <ClInclude Include="HittableList.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MovingSphere.h" />
+    <ClInclude Include="ONB.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="PlanRect.h" />
     <ClInclude Include="ray.h" />

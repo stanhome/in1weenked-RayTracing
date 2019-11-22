@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/the rest of your life/ch06-Importance Sampling Materials.png";
+const char *FILE_PATH = "output/the rest of your life/ch07-Ortho-normal Bases.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -339,7 +339,7 @@ int main()
 
 	int nx = 500;
 	int ny = 500;
-	int ns = 10;
+	int ns = 100;
 	int n = 4;
 
 	// init world objects;

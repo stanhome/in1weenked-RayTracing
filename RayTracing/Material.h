@@ -4,6 +4,7 @@
 #include "ray.h"
 #include "Hittable.h"
 #include "Texture.h"
+#include "ONB.h"
 
 
 class Material {
@@ -32,15 +33,19 @@ public:
 		// rec.p + rec.normal => 射线碰撞点的单位切球（单位球体与碰撞点相切）的球心
 		//vec3 target = rec.p + rec.normal + randomInUnitSphere();
 
-		vec3 direction;
-		do 
-		{
-			direction = randomInUnitSphere();
-		} while (vec3::dot(direction, rec.normal) < 0);
+		//vec3 direction;
+		//do 
+		//{
+		//	direction = randomInUnitSphere();
+		//} while (vec3::dot(direction, rec.normal) < 0);
+
+		ONB uvw;
+		uvw.buildFromW(rec.normal);
+		vec3 direction = uvw.local(randomCosineDirection());
 
 		scattered = Ray(rec.p, direction.normalized(), rIn.time());
 		attenuation = albedo->val(rec.u, rec.v, rec.p);
-		pdf = 0.5 / M_PI;
+		pdf = vec3::dot(uvw.w(), scattered.direction()) / M_PI;
 
 		return true;
 	}
