@@ -17,7 +17,7 @@ public:
 	virtual float scatteringPDF(const Ray &rIn, const HitRecord &rec, Ray &scattered) const {
 		return 0;
 	}
-	virtual vec3 emitted(float u, float v, const vec3 &pos) const { return vec3::ZERO; }
+	virtual vec3 emitted(const Ray& rIn, const HitRecord &rec, float u, float v, const vec3& pos) const { return vec3::ZERO; }
 };
 
 
@@ -165,8 +165,15 @@ public:
 		return false;
 	}
 
-	virtual vec3 emitted(float u, float v, const vec3 &pos) const override{
-		return emit->val(u, v, pos);
+	virtual vec3 emitted(const Ray& rIn, const HitRecord &rec, float u, float v, const vec3& pos) const override{
+		if (vec3::dot(rec.normal, rIn.direction()) < 0.0)
+		{
+			return emit->val(u, v, pos);
+		}
+		else
+		{
+			return vec3::ZERO;
+		}
 	}
 };
 

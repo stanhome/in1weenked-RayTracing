@@ -37,7 +37,7 @@ vec3 color(const Ray &r, Hittable *world, int depth) {
 	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
 		Ray scattered;
 		vec3 albedo;
-		vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.p);
+		vec3 emitted = rec.matPtr->emitted(r, rec, rec.u, rec.v, rec.p);
 		float pdf;
 
 		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdf))
@@ -147,7 +147,7 @@ void cornellBox(Hittable **scene, Camera **camera, float aspect) {
 	// light
 	auto lightPlane = new XZRect(213, 343, 227, 332, 554, light);
 	lightPlane->name = "Top light";
-	list[i++] = lightPlane;
+	list[i++] = new FlipNormals(lightPlane);
 
 	list[i++] = room();
 
