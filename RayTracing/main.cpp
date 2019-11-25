@@ -25,7 +25,7 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/the rest of your life/ch07-Ortho-normal Bases.png";
+const char *FILE_PATH = "output/the rest of your life/ch09-Sampling Lights Directly.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
@@ -42,6 +42,20 @@ vec3 color(const Ray &r, Hittable *world, int depth) {
 
 		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdf))
 		{
+			// light position, and light area
+			vec3 onLight = vec3(213 + randCanonical() * (343 - 213), 554, 227 + randCanonical() * (332 - 227));
+			vec3 toLight = onLight - rec.p;
+			float distanceSquared = toLight.squaredLength();
+			toLight.normalize();
+			if (vec3::dot(toLight, rec.normal) < 0) return emitted;
+
+			float lightArea = (343 - 213) * (332 - 227);
+			float lightCosine = fabs(toLight.y);
+			if (lightCosine < 0.000001) return emitted;
+
+			pdf = distanceSquared / (lightCosine * lightArea);
+			scattered = Ray(rec.p, toLight, r.time());
+
 			return emitted + albedo * rec.matPtr->scatteringPDF(r, rec, scattered) * color(scattered, world, depth + 1) / pdf;
 		}
 		else {
@@ -331,6 +345,8 @@ int ns = 20;
 
 no Bounding Volume Hierarchies speed up ==> well done. elapsed:374.214s
 with Bounding Volume Hierarchies speed up ==> well done. elapsed:156.208s
+
+with light PDF Sample ==> well done. elapsed:5.431s
 */
 
 int main()
@@ -339,7 +355,7 @@ int main()
 
 	int nx = 500;
 	int ny = 500;
-	int ns = 100;
+	int ns = 10;
 	int n = 4;
 
 	// init world objects;

@@ -11,7 +11,7 @@ private:
 
 public:
 	Ray() {}
-	Ray(const vec3 &a, const vec3 &b, float time=0.0): _origin(a), _direction(b), _time(time) {
+	Ray(const vec3 &origin, const vec3 &direction, float time=0.0): _origin(origin), _direction(direction), _time(time) {
 		_direction.normalize();
 	}
 	const vec3 &origin() const { return _origin; }
