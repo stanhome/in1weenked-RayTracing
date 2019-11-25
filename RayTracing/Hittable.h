@@ -23,7 +23,9 @@ public:
 public:
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const = 0;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const = 0;
-};
+	virtual float pdfVal(const vec3 &o, const vec3 &v) const { return 0.0; }
+	virtual vec3 random(const vec3 &o) const { return vec3::LEFT; }
+}; 
 
 
 class FlipNormals : public Hittable {

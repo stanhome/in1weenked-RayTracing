@@ -155,6 +155,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="MovingSphere.h" />
     <ClInclude Include="ONB.h" />
+    <ClInclude Include="PDF.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="PlanRect.h" />
     <ClInclude Include="ray.h" />

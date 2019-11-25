@@ -22,15 +22,18 @@
 #include "PlanRect.h"
 #include "Box.h"
 #include "ConstantMedium.h"
+#include "PDF.h"
 
 using namespace std;
 
-const char *FILE_PATH = "output/the rest of your life/ch09-Sampling Lights Directly.png";
+const char *FILE_PATH = "output/the rest of your life/ch10-Mixture Densities.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
 const int RAY_TRACE_MAX_TIMES = 50;
 
+
+Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
 
 vec3 color(const Ray &r, Hittable *world, int depth) {
 	HitRecord rec;
@@ -38,25 +41,30 @@ vec3 color(const Ray &r, Hittable *world, int depth) {
 		Ray scattered;
 		vec3 albedo;
 		vec3 emitted = rec.matPtr->emitted(r, rec, rec.u, rec.v, rec.p);
-		float pdf;
+		float pdfVal;
 
-		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdf))
+		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdfVal))
 		{
-			// light position, and light area
-			vec3 onLight = vec3(213 + randCanonical() * (343 - 213), 554, 227 + randCanonical() * (332 - 227));
-			vec3 toLight = onLight - rec.p;
-			float distanceSquared = toLight.squaredLength();
-			toLight.normalize();
-			if (vec3::dot(toLight, rec.normal) < 0) return emitted;
+			// case 1
+			//CosinePdf p(rec.normal);
+			//scattered = Ray(rec.p, p.generate(), r.time());
+			//pdfVal = p.val(scattered.direction());
 
-			float lightArea = (343 - 213) * (332 - 227);
-			float lightCosine = fabs(toLight.y);
-			if (lightCosine < 0.000001) return emitted;
+			// case 2
+			//Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
+			//HittablePdf p(lightShape, rec.p);
+			//scattered = Ray(rec.p, p.generate(), r.time());
+			//pdfVal = p.val(scattered.direction());
 
-			pdf = distanceSquared / (lightCosine * lightArea);
-			scattered = Ray(rec.p, toLight, r.time());
+			// case 3:
+			//Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
+			HittablePdf p0(lightShape, rec.p);
+			CosinePdf p1(rec.normal);
+			MixturePdf p(&p0, &p1);
+			scattered = Ray(rec.p, p.generate(), r.time());
+			pdfVal = p.val(scattered.direction());
 
-			return emitted + albedo * rec.matPtr->scatteringPDF(r, rec, scattered) * color(scattered, world, depth + 1) / pdf;
+			return emitted + albedo * rec.matPtr->scatteringPDF(r, rec, scattered) * color(scattered, world, depth + 1) / pdfVal;
 		}
 		else {
 			return emitted;
@@ -355,7 +363,7 @@ int main()
 
 	int nx = 500;
 	int ny = 500;
-	int ns = 10;
+	int ns = 100;
 	int n = 4;
 
 	// init world objects;

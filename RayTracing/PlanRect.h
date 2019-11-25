@@ -67,6 +67,26 @@ public:
 		box = AABB(vec3(x0, k-THICKNESS, z0), vec3(x1, k+THICKNESS, z1));
 		return true;
 	}
+
+	virtual float pdfVal(const vec3 &o, const vec3 &v) const override {
+		HitRecord rec;
+		if (this->hit(Ray(o, v), 0.001, FLT_MAX, rec))
+		{
+			float area = w * h;
+			float distanceSquared = rec.t * rec.t * v.squaredLength();
+			float cosine = fabs(vec3::dot(v, rec.normal) / v.length());
+			return distanceSquared / (cosine * area);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	virtual vec3 random(const vec3 &o) const override {
+		vec3 randomPoint = vec3(x0 + randCanonical() * w, k, z0 + randCanonical() * h);
+		return randomPoint - o;
+	}
 };
 
 bool XZRect::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {

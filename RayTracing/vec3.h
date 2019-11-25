@@ -17,6 +17,7 @@ public:
 
 	static vec3 ZERO;
 	static vec3 ONE;
+	static vec3 LEFT;
 	static vec3 UP;
 	
 public:
@@ -132,4 +133,5 @@ inline std::ostream &operator<<(std::ostream &os, const vec3 &t) {
 
 vec3 vec3::ZERO = vec3(0, 0, 0);
 vec3 vec3::ONE = vec3(1, 1, 1);
+vec3 vec3::LEFT = vec3(1, 0, 0);
 vec3 vec3::UP = vec3(0, 1, 0);
