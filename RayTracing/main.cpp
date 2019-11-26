@@ -26,45 +26,31 @@
 
 using namespace std;
 
-const char *FILE_PATH = "output/the rest of your life/ch10-Mixture Densities.png";
+const char *FILE_PATH = "output/the rest of your life/ch12-Cleaning up PDF Management.png";
 
 const float MAX_RAY_HIT_DISTANCE = 10000.0;
 // 光线追踪最大次数
 const int RAY_TRACE_MAX_TIMES = 50;
 
 
-Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
-
-vec3 color(const Ray &r, Hittable *world, int depth) {
-	HitRecord rec;
-	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, rec)) {
-		Ray scattered;
-		vec3 albedo;
-		vec3 emitted = rec.matPtr->emitted(r, rec, rec.u, rec.v, rec.p);
-		float pdfVal;
-
-		if (depth < RAY_TRACE_MAX_TIMES && rec.matPtr->scatter(r, rec, albedo, scattered, pdfVal))
+vec3 color(const Ray &r, Hittable *world, Hittable *lightShape, int depth) {
+	HitRecord hrec;
+	if (world->hit(r, 0.001, MAX_RAY_HIT_DISTANCE, hrec)) {
+		ScatterRecord srec;
+		vec3 emitted = hrec.matPtr->emitted(r, hrec, hrec.u, hrec.v, hrec.p);
+		if (depth < RAY_TRACE_MAX_TIMES && hrec.matPtr->scatter(r, hrec, srec))
 		{
-			// case 1
-			//CosinePdf p(rec.normal);
-			//scattered = Ray(rec.p, p.generate(), r.time());
-			//pdfVal = p.val(scattered.direction());
+			if (srec.isSpecular) {
+				return srec.attenuation *color(srec.specularRay, world, lightShape, depth + 1);
+			}
+			else {
+				HittablePdf plight(lightShape, hrec.p);
+				MixturePdf p(&plight, srec.pdfPtr);
+				Ray scattered = Ray(hrec.p, p.generate(), r.time());
+				float pdfVal = p.val(scattered.direction());
 
-			// case 2
-			//Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
-			//HittablePdf p(lightShape, rec.p);
-			//scattered = Ray(rec.p, p.generate(), r.time());
-			//pdfVal = p.val(scattered.direction());
-
-			// case 3:
-			//Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
-			HittablePdf p0(lightShape, rec.p);
-			CosinePdf p1(rec.normal);
-			MixturePdf p(&p0, &p1);
-			scattered = Ray(rec.p, p.generate(), r.time());
-			pdfVal = p.val(scattered.direction());
-
-			return emitted + albedo * rec.matPtr->scatteringPDF(r, rec, scattered) * color(scattered, world, depth + 1) / pdfVal;
+				return emitted + srec.attenuation * hrec.matPtr->scatteringPDF(r, hrec, scattered) * color(scattered, world, lightShape, depth + 1) / pdfVal;
+			}
 		}
 		else {
 			return emitted;
@@ -164,8 +150,10 @@ void cornellBox(Hittable **scene, Camera **camera, float aspect) {
 	list[i++] = new Translate(
 		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
 		vec3(130, 0, 65));
+
+	Material *aluminum = new Metal(vec3(0.8, 0.85, 0.88), 0.0); //铝
 	list[i++] = new Translate(
-		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), aluminum), 15),
 		vec3(265, 0, 295));
 
 	*scene = new HittableList(list, i);
@@ -374,6 +362,8 @@ int main()
 	Camera *camera;
 	float aspect = float(ny) / float(nx);
 	cornellBox(&world, &camera, aspect);
+	Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
+	Hittable *glassSphere = new Sphere(vec3(190, 90, 190), 90, 0);
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
@@ -392,7 +382,7 @@ int main()
 					float v = float(j + randCanonical()) / float(ny);
 					Ray r = camera->getRay(u, v);
 					//vec3 p = r.pointAtParameter(2.0);
-					col += color(r, world, 0);
+					col += color(r, world, lightShape, 0);
 				}
 
 				col /= float(ns);

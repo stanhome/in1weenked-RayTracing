@@ -14,6 +14,9 @@ public:
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const;
 
+	virtual float pdfVal(const vec3 &o, const vec3 &v) const override;
+	virtual vec3 random(const vec3 &o) const override;
+
 private:
 	void assignHitRecord(HitRecord &rec, float t, const Ray &r) const {
 		rec.t = t;
@@ -58,4 +61,27 @@ bool Sphere::boundingBox(float time0, float time1, AABB &box) const {
 	box = AABB(center - rVec, center + rVec);
 
 	return true;
+}
+
+float Sphere::pdfVal(const vec3 &o, const vec3 &v) const {
+	HitRecord rec;
+	if (this->hit(Ray(o, v), 0.001, FLT_MAX, rec))
+	{
+		float cosThetaMax = sqrt(1 - radius * radius / (center - o).squaredLength());
+		float solidAngle = M_2PI * (1 - cosThetaMax);
+
+		return 1 / solidAngle;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+vec3 Sphere::random(const vec3 &o) const {
+	vec3 direction = center - o;
+	float distanceSquared = direction.squaredLength();
+	ONB uvw;
+	uvw.buildFromW(direction);
+	return uvw.local(randomToSphere(radius, distanceSquared);
 }

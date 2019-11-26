@@ -51,6 +51,17 @@ vec3 randomOnUnitSphere() {
 	return p.normalized();
 }
 
+inline vec3 randomToSphere(float radius, float distanceSquared) {
+	float r1 = randCanonical();
+	float r2 = randCanonical();
+	float z = 1 + r2 * (sqrt(1 - radius * radius / distanceSquared) - 1);
+	float phi = M_2PI * r1;
+	float x = cos(phi) * sqrt(1 - z * z);
+	float y = sin(phi) * sqrt(1 - z * z);
+
+	return vec3(x, y, z);
+}
+
 vec3 randomCosineDirection() {
 	float r1 = randCanonical();
 	float r2 = randCanonical();
