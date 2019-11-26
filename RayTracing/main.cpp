@@ -337,6 +337,16 @@ vec3 focusRotate(const vec3 &lookFrom, const vec3 &lookAt, float rotateYDegree)
 
 #define MULTIPLE_RUN
 
+inline vec3 deNaN(const vec3 &c) {
+	vec3 tmp = c;
+	// any if test with a NaN in it is false.
+	if (!(tmp.x == tmp.x)) tmp.x = 0; //NaN
+	if (!(tmp.y == tmp.y)) tmp.y = 0; //NaN
+	if (!(tmp.z == tmp.z)) tmp.z = 0; //NaN
+
+	return tmp;
+}
+
 /*
 int nx = 800;
 int ny = 400;
@@ -389,7 +399,7 @@ int main()
 					float v = float(j + randCanonical()) / float(ny);
 					Ray r = camera->getRay(u, v);
 					//vec3 p = r.pointAtParameter(2.0);
-					col += color(r, world, &hlist, 0);
+					col += deNaN(color(r, world, &hlist, 0));
 				}
 
 				col /= float(ns);
