@@ -354,7 +354,7 @@ int main()
 
 	int nx = 500;
 	int ny = 500;
-	int ns = 100;
+	int ns = 1000;
 	int n = 4;
 
 	// init world objects;
