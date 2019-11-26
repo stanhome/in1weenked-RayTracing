@@ -12,6 +12,9 @@ public:
 	HittableList(Hittable **l, int n) : list(l), size(n) {}
 	virtual bool hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const;
 	virtual bool boundingBox(float time0, float time1, AABB &box) const;
+
+	float pdfVal(const vec3 &o, const vec3 &v) const override;
+	vec3 random(const vec3 &o) const override;
 };
 
 bool HittableList::hit(const Ray &r, float tMin, float tMax, HitRecord &rec) const {
@@ -57,4 +60,27 @@ bool HittableList::boundingBox(float time0, float time1, AABB &box) const
 	}
 
 	return true;
+}
+
+
+float HittableList::pdfVal(const vec3 &o, const vec3 &v) const {
+	float weight = 1.0 / this->size;
+	float sum = 0;
+	for (int i = 0; i < this->size; i++)
+	{
+		sum += weight * list[i]->pdfVal(o, v);
+	}
+
+	return sum;
+}
+
+vec3 HittableList::random(const vec3 &o) const {
+	int index = int(randCanonical() * this->size);
+
+	while (index >= this->size)
+	{
+		index = int(randCanonical() * this->size);
+	}
+
+	return list[index]->random(o);
 }

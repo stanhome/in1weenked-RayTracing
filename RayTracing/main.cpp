@@ -367,6 +367,10 @@ int main()
 	cornellBox(&world, &camera, aspect);
 	Hittable *lightShape = new XZRect(213, 343, 227, 332, 554, 0);
 	Hittable *glassSphere = new Sphere(vec3(190, 90, 190), 90, 0);
+	Hittable *pdfList[2];
+	pdfList[0] = lightShape;
+	pdfList[1] = glassSphere;
+	HittableList hlist(pdfList, 2);
 
 	now = time(0);
 	printf("[%s]random scene end.\n", ctime(&now));
@@ -385,7 +389,7 @@ int main()
 					float v = float(j + randCanonical()) / float(ny);
 					Ray r = camera->getRay(u, v);
 					//vec3 p = r.pointAtParameter(2.0);
-					col += color(r, world, glassSphere, 0);
+					col += color(r, world, &hlist, 0);
 				}
 
 				col /= float(ns);
