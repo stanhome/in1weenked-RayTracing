@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hittable.h"
+#include "ONB.h"
 
 class Sphere : public Hittable {
 public:
@@ -83,5 +84,5 @@ vec3 Sphere::random(const vec3 &o) const {
 	float distanceSquared = direction.squaredLength();
 	ONB uvw;
 	uvw.buildFromW(direction);
-	return uvw.local(randomToSphere(radius, distanceSquared);
+	return uvw.local(randomToSphere(radius, distanceSquared));
 }
