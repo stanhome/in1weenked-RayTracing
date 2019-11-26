@@ -63,7 +63,7 @@ vec3 color(const Ray &r, Hittable *world, Hittable *lightShape, int depth) {
 
 		//return (1.0 - t) * vec3::ONE + t * vec3(0.5, 0.7, 1.0);
 
-		return vec3::ZERO;
+		return vec3::ZERO; 
 	}
 }
 
@@ -146,14 +146,17 @@ void cornellBox(Hittable **scene, Camera **camera, float aspect) {
 	list[i++] = room();
 
 	Material *white = new Lambertian(new ConstantTexture(vec3(0.73, 0.73, 0.73)));
-	// two blocks
-	list[i++] = new Translate(
-		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
-		vec3(130, 0, 65));
+	//Material *aluminum = new Metal(vec3(0.8, 0.85, 0.88), 0.0); //铝
+	Material *glass = new Dielectric(1.5);
 
-	Material *aluminum = new Metal(vec3(0.8, 0.85, 0.88), 0.0); //铝
+	// two blocks
+	//list[i++] = new Translate(
+	//	new RotateY(new Box(vec3(0, 0, 0), vec3(165, 165, 165), white), -18),
+	//	vec3(130, 0, 65));
+
+	list[i++] = new Sphere(vec3(190, 90, 190), 90, glass);
 	list[i++] = new Translate(
-		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), aluminum), 15),
+		new RotateY(new Box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15),
 		vec3(265, 0, 295));
 
 	*scene = new HittableList(list, i);
@@ -351,7 +354,7 @@ int main()
 
 	int nx = 500;
 	int ny = 500;
-	int ns = 10;
+	int ns = 100;
 	int n = 4;
 
 	// init world objects;
@@ -382,7 +385,7 @@ int main()
 					float v = float(j + randCanonical()) / float(ny);
 					Ray r = camera->getRay(u, v);
 					//vec3 p = r.pointAtParameter(2.0);
-					col += color(r, world, lightShape, 0);
+					col += color(r, world, glassSphere, 0);
 				}
 
 				col /= float(ns);
