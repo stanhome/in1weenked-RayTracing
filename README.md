@@ -4,7 +4,7 @@
 
 ### In One Weekend
 
-![ch12-Final Scene-big](RayTracing\output\one week\ch12-Final Scene-big.png)
+![ch12-Final Scene-big](.\RayTracing\output\one week\ch12-Final Scene-big.png)
 
 ### The Next Week
 ![ch09-final_ns_10000](RayTracing\output\next week\ch09-final_ns_10000.png)
